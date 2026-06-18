@@ -1,7 +1,142 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand-bg: #121223;
+  --color-brand-surface-1: #0c0c1d;
+  --color-brand-surface-2: #1a1a2e;
+  --color-brand-surface-3: #333346;
+  
+  --color-brand-primary: #00fbfb;
+  --color-brand-primary-tint: #00dddd;
+  --color-brand-on-primary: #003737;
+  
+  --color-brand-secondary: #fe00fe;
+  --color-brand-on-secondary: #5b005b;
+  
+  --color-brand-tertiary: #eaea00;
+  --color-brand-on-tertiary: #323200;
+  
+  --color-brand-text: #e2e0f9;
+  
+  --color-brand-border: #ffffff;
+  --color-brand-border-muted: #839493;
+  
+  --color-brand-error: #93000a;
+  --color-brand-on-error: #ffdad6;
+
+  --font-pixel: "Press Start 2P", monospace;
+  --font-sans: "Space Grotesk", sans-serif;
+}
+
 @layer base {
   body {
-    @apply bg-[#0f0f1a] text-gray-100 antialiased font-sans;
+    @apply bg-[var(--color-brand-bg)] text-[var(--color-brand-text)] antialiased;
+    font-family: var(--font-sans);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-pixel);
+    line-height: 1.6;
+  }
+  
+  /* Remove default border radius on interactive elements */
+  button, input, select, textarea, div {
+    border-radius: 0 !important;
   }
 }
+
+@layer components {
+  /* Level 1: Panels - Base container */
+  .panel-l1 {
+    @apply bg-[var(--color-brand-bg)] border-[3px] border-[var(--color-brand-border)];
+  }
+  
+  /* Level 2: Interactive base with hard shadow */
+  .panel-l2-cyan {
+    @apply bg-[var(--color-brand-bg)] border-[3px] border-[var(--color-brand-border)] shadow-[6px_6px_0px_0px_var(--color-brand-primary)] transition-all duration-75;
+  }
+  
+  .panel-l2-magenta {
+    @apply bg-[var(--color-brand-bg)] border-[3px] border-[var(--color-brand-border)] shadow-[6px_6px_0px_0px_var(--color-brand-secondary)] transition-all duration-75;
+  }
+  
+  /* Level 3: Press/Hover effect */
+  .pressable-cyan:hover, .pressable-cyan:active {
+    @apply translate-x-[4px] translate-y-[4px] shadow-[2px_2px_0px_0px_var(--color-brand-primary)];
+  }
+  
+  .pressable-magenta:hover, .pressable-magenta:active {
+    @apply translate-x-[4px] translate-y-[4px] shadow-[2px_2px_0px_0px_var(--color-brand-secondary)];
+  }
+
+  /* Neobrutal Card */
+  .neobrutal-card {
+    background-color: var(--color-brand-surface-2);
+    border: 3px solid #ffffff;
+    box-shadow: 6px 6px 0px 0px #ffabf3;
+    transition: all 0.2s;
+  }
+  .neobrutal-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0px 0px #ffabf3;
+  }
+
+  /* Neobrutal Primary Button */
+  .neobrutal-btn-primary {
+    background-color: #00fbfb;
+    color: #003737;
+    border: 3px solid black;
+    box-shadow: 6px 6px 0px 0px #ffabf3;
+    transition: all 0.1s;
+    font-family: var(--font-pixel);
+    font-size: 16px;
+    padding: 12px 32px;
+    text-transform: uppercase;
+  }
+  .neobrutal-btn-primary:active {
+    transform: translate(4px, 4px);
+    box-shadow: 2px 2px 0px 0px #ffabf3;
+  }
+
+  /* Neobrutal Secondary Button */
+  .neobrutal-btn-secondary {
+    background-color: transparent;
+    color: #ffffff;
+    border: 3px solid #ffffff;
+    box-shadow: 6px 6px 0px 0px #00fbfb;
+    transition: all 0.1s;
+    font-family: var(--font-pixel);
+    font-size: 16px;
+    padding: 12px 32px;
+    text-transform: uppercase;
+  }
+  .neobrutal-btn-secondary:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px 0px #00fbfb;
+  }
+
+  /* Neobrutal Shadows */
+  .neobrutal-shadow-primary { box-shadow: 6px 6px 0px 0px #00fbfb; }
+  .neobrutal-shadow-secondary { box-shadow: 6px 6px 0px 0px #ffabf3; }
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+
+@keyframes scanline {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+@keyframes glitch {
+  0% { transform: translate(0); }
+  1% { transform: translate(-2px, 1px); }
+  2% { transform: translate(2px, -1px); }
+  3% { transform: translate(0); }
+}
+.pixel-glitch { animation: glitch 3s infinite; }
