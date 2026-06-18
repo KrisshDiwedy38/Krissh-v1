@@ -1,0 +1,100 @@
+import { useState, useEffect } from 'react';
+import PageTransition from '../components/layout/PageTransition';
+
+interface Experience {
+  id: number;
+  company: string;
+  role: string;
+  start_date: string;
+  end_date: string;
+  description: string;
+  tech_stack: string;
+}
+
+const DUMMY_EXPERIENCES: Experience[] = [
+  { id: 1, company: 'MARS SETTLEMENT CORP', role: 'SENIOR VOID ENGINEER', start_date: '2022', end_date: 'PRESENT', description: 'Leading the architectural design of distributed life-support systems across three Jovian moons. Orchestrating sub-zero server clusters and ensuring 99.99% uptime for terraforming algorithms.', tech_stack: 'Quantum-JS, NebulaDB, Rust' },
+  { id: 2, company: 'ORBITAL DYNAMICS', role: 'LEAD UX ASTRONAUT', start_date: '2019', end_date: '2022', description: 'Designed the first haptic-feedback cockpit interface for light-speed freighters. Conducted user research with deep-space mining crews to optimize emergency evacuation protocols.', tech_stack: 'Figma-OS, Haptics, DirectX-99' },
+  { id: 3, company: 'NEBULA SYSTEMS', role: 'SOLAR DEVELOPER', start_date: '2017', end_date: '2019', description: 'Pioneered energy-efficient rendering pipelines for solar-powered handheld devices. Optimized low-level C++ drivers for communication satellites in the asteroid belt.', tech_stack: 'C++, SolarNet, OpenGL' },
+];
+
+const SHADOW_COLORS = ['#ffabf3', '#00fbfb', '#ffabf3'];
+const BORDER_COLORS = ['var(--color-brand-secondary)', 'var(--color-brand-primary-tint)', 'var(--color-brand-tertiary)'];
+const BADGE_STYLES = [
+  { bg: 'bg-[var(--color-brand-secondary)]', text: 'text-[var(--color-brand-on-secondary)]' },
+  { bg: 'bg-[var(--color-brand-primary)]', text: 'text-black' },
+  { bg: 'bg-[var(--color-brand-tertiary)]', text: 'text-black' },
+];
+
+export default function Experience() {
+  const [experiences, setExperiences] = useState<Experience[]>(DUMMY_EXPERIENCES);
+
+  useEffect(() => {
+    fetch('/api/experience/')
+      .then(r => r.json())
+      .then(data => { if (data.length) setExperiences(data); })
+      .catch(() => {});
+  }, []);
+
+  return (
+    <PageTransition>
+      {/* Hero */}
+      <section className="relative w-full h-[400px] flex flex-col items-center justify-end overflow-hidden bg-gradient-to-b from-[var(--color-brand-surface-1)] to-[var(--color-brand-bg)]">
+        <div className="relative z-10 text-center mb-16 px-4">
+          <h1 className="font-pixel text-3xl md:text-4xl text-white mb-4" style={{ textShadow: '4px 4px 0px #fe00fe' }}>MISSION LOGS</h1>
+          <p className="font-sans text-lg text-[var(--color-brand-secondary)] uppercase tracking-[0.2em]">Navigating the Career Nebula</p>
+        </div>
+      </section>
+
+      {/* Timeline */}
+      <section className="max-w-7xl mx-auto px-8 py-8 relative">
+        <div className="flex flex-col gap-24 relative">
+          {experiences.map((exp, i) => (
+            <div key={exp.id} className={`flex flex-col ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-12 group`}>
+              {/* Circle */}
+              <div className="relative shrink-0">
+                <div
+                  className="w-32 h-32 md:w-48 md:h-48 rounded-full border-[3px] bg-[var(--color-brand-surface-2)] flex items-center justify-center overflow-hidden transition-all group-hover:scale-105"
+                  style={{ borderColor: BORDER_COLORS[i % BORDER_COLORS.length], boxShadow: `6px 6px 0px 0px ${SHADOW_COLORS[i % SHADOW_COLORS.length]}` }}
+                >
+                  <span className="font-pixel text-3xl text-white">{exp.company.charAt(0)}</span>
+                </div>
+              </div>
+              {/* Card */}
+              <div
+                className="flex-grow p-4 md:p-8 bg-[var(--color-brand-surface-2)] border-[3px] border-white transition-all"
+                style={{ boxShadow: `6px 6px 0px 0px ${SHADOW_COLORS[i % SHADOW_COLORS.length]}` }}
+              >
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                  <div>
+                    <span className="font-sans text-xs uppercase mb-2 block" style={{ color: SHADOW_COLORS[i % SHADOW_COLORS.length] }}>{exp.company}</span>
+                    <h2 className="font-pixel text-xl md:text-2xl text-white">{exp.role}</h2>
+                  </div>
+                  <div className={`mt-4 md:mt-0 px-4 py-2 ${BADGE_STYLES[i % BADGE_STYLES.length].bg} ${BADGE_STYLES[i % BADGE_STYLES.length].text} font-bold font-sans text-sm`}>
+                    {exp.start_date} - {exp.end_date}
+                  </div>
+                </div>
+                <p className="font-sans text-sm text-[var(--color-brand-text)] opacity-70 mb-6 border-l-4 pl-4" style={{ borderColor: SHADOW_COLORS[i % SHADOW_COLORS.length] }}>
+                  {exp.description}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {exp.tech_stack.split(',').map(tech => (
+                    <span key={tech.trim()} className="px-3 py-1 border-2 border-[var(--color-brand-border-muted)] font-sans text-xs uppercase text-[var(--color-brand-text)] opacity-60">{tech.trim()}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="max-w-4xl mx-auto px-8 py-8 my-24">
+        <div className="border-[3px] border-white bg-[var(--color-brand-bg)] p-8 neobrutal-shadow-secondary text-center">
+          <h3 className="font-pixel text-2xl text-white mb-6">ESTABLISH COMMS?</h3>
+          <p className="font-sans text-lg text-[var(--color-brand-text)] opacity-70 mb-8">Interested in collaborating on the next frontier? Signal me through the subspace link.</p>
+          <button className="neobrutal-btn-primary" onClick={() => window.location.href = '/contact'}>TRANSMIT</button>
+        </div>
+      </section>
+    </PageTransition>
+  );
+}
