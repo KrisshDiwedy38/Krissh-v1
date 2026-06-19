@@ -6,27 +6,21 @@ import Chip from '../components/ui/Chip';
 const SKILL_CATEGORIES = [
   {
     id: 1,
-    title: 'CORE LANGUAGES',
+    title: 'LANGUAGES',
     subtitle: 'Base Systems',
-    skills: ['Python', 'TypeScript', 'JavaScript', 'C++', 'SQL']
+    skills: ['Python', 'C++', 'SQL', 'JavaScript', 'R', 'C', 'HTML5', 'CSS']
   },
   {
     id: 2,
-    title: 'FRONTEND',
-    subtitle: 'Display Interfaces',
-    skills: ['React', 'Next.js', 'Tailwind CSS', 'Framer Motion', 'HTML/CSS']
+    title: 'FRAMEWORKS & LIBRARIES',
+    subtitle: 'Display Interfaces & Cores',
+    skills: ['Pandas', 'NumPy', 'Scikit-learn', 'Hugging Face Transformers', 'Bootstrap', 'React', 'Django']
   },
   {
     id: 3,
-    title: 'BACKEND',
-    subtitle: 'Server Cores',
-    skills: ['Django', 'Node.js', 'Express', 'PostgreSQL', 'REST APIs']
-  },
-  {
-    id: 4,
-    title: 'TOOLS & DEVOPS',
+    title: 'DATABASES & TOOLS',
     subtitle: 'Navigational Utilities',
-    skills: ['Git', 'Docker', 'AWS', 'Vercel', 'Supabase', 'Linux']
+    skills: ['PostgreSQL', 'Supabase', 'Git', 'Tableau', 'Anaconda', 'Redis']
   }
 ];
 

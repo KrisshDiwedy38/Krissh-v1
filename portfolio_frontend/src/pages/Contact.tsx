@@ -1,9 +1,78 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PageTransition from '../components/layout/PageTransition';
+import { getOrbitalPosition, getOrbitPathParams, type OrbitParams } from '../utils/orbitalPhysics';
+
+interface SatelliteConfig {
+  id: string;
+  icon: string;
+  label: string;
+  href: string;
+  orbitParams: OrbitParams;
+  color: string;
+  size: number;
+}
+
+const SATELLITES: SatelliteConfig[] = [
+  {
+    id: 'gmail',
+    icon: '/Gmail_Logo.png',
+    label: 'GMAIL',
+    href: 'mailto:contact@krissh.dev',
+    orbitParams: { a: 160, e: 0.2, period: 10, initialM: 0 },
+    color: 'var(--color-brand-primary)',
+    size: 70,
+  },
+  {
+    id: 'linkedin',
+    icon: '/LinkedIn_Logo.png',
+    label: 'LINKEDIN',
+    href: 'https://linkedin.com',
+    orbitParams: { a: 220, e: 0.25, period: 16, initialM: Math.PI / 2 },
+    color: 'var(--color-brand-secondary)',
+    size: 85,
+  },
+  {
+    id: 'github',
+    icon: '/Github_Logo.png',
+    label: 'GITHUB',
+    href: 'https://github.com',
+    orbitParams: { a: 280, e: 0.3, period: 24, initialM: Math.PI },
+    color: 'var(--color-brand-tertiary)',
+    size: 95,
+  },
+  {
+    id: 'twitter',
+    icon: '/X_Logo.png',
+    label: 'X / TWITTER',
+    href: 'https://x.com',
+    orbitParams: { a: 360, e: 0.35, period: 34, initialM: Math.PI * 1.5 },
+    color: 'var(--color-brand-primary-tint)',
+    size: 80,
+  },
+];
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState('');
+
+  const requestRef = useRef<number>(0);
+  const satelliteRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  const updatePositions = (time: number) => {
+    SATELLITES.forEach(sat => {
+      const pos = getOrbitalPosition(time, sat.orbitParams);
+      const el = satelliteRefs.current[sat.id];
+      if (el) {
+        el.style.transform = `translate(${pos.x}px, ${pos.y}px) rotateX(-70deg)`;
+      }
+    });
+    requestRef.current = requestAnimationFrame(updatePositions);
+  };
+
+  useEffect(() => {
+    requestRef.current = requestAnimationFrame(updatePositions);
+    return () => cancelAnimationFrame(requestRef.current);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,71 +95,92 @@ export default function Contact() {
 
   return (
     <PageTransition>
-      <main className="min-h-screen pt-32 pb-8 px-8 flex flex-col items-center justify-center relative">
+      <main className="min-h-screen pt-32 pb-8 px-8 flex flex-col items-center justify-center relative overflow-hidden">
         {/* Title */}
-        <div className="text-center mb-16 z-10">
+        <div className="text-center mb-4 z-10">
           <h1 className="font-pixel text-3xl md:text-4xl text-[var(--color-brand-primary)] mb-4">ESTABLISH CONTACT</h1>
           <p className="font-sans text-lg text-[var(--color-brand-text)] opacity-70 max-w-2xl">Transmitting through the celestial void. Select a frequency to connect with the mothership.</p>
         </div>
 
-        {/* Central Earth + Satellite Links */}
-        <div className="relative w-full max-w-4xl aspect-square md:aspect-video flex items-center justify-center">
-          {/* Orbit Rings (decorative) */}
-          <div className="absolute inset-0 flex items-center justify-center z-0 opacity-20">
-            <div className="w-[300px] h-[300px] md:w-[500px] md:h-[500px] border-4 border-dashed border-[var(--color-brand-border-muted)] rounded-full" style={{ animation: 'spin 20s linear infinite' }} />
-            <div className="absolute w-[450px] h-[450px] md:w-[700px] md:h-[700px] border-2 border-dotted border-[var(--color-brand-border-muted)] rounded-full" style={{ animation: 'spin 20s linear infinite reverse' }} />
-          </div>
+        {/* Central Earth + Satellite Links (Physics Based) */}
+        <div className="relative w-full max-w-4xl h-[500px] md:h-[700px] flex items-center justify-center scale-[0.85] md:scale-125 lg:scale-150">
+          <div className="relative w-full h-full flex items-center justify-center" style={{ transformStyle: 'preserve-3d', transform: 'translateX(126px) rotateX(70deg)' }}>
+            
+            {/* SVG for Orbit Paths */}
+            <svg className="absolute overflow-visible w-0 h-0" style={{ zIndex: 0 }}>
+              {SATELLITES.map(sat => {
+                const { a, b, c } = getOrbitPathParams(sat.orbitParams);
+                return (
+                  <ellipse 
+                    key={`${sat.id}-path`}
+                    cx={-c} 
+                    cy={0} 
+                    rx={a} 
+                    ry={b} 
+                    fill="none" 
+                    stroke="var(--color-brand-border-muted)" 
+                    strokeWidth="2"
+                    strokeDasharray="4 4"
+                    opacity="0.4"
+                  />
+                );
+              })}
+            </svg>
 
-          {/* Central Earth Node */}
-          <div className="relative z-20" style={{ filter: 'drop-shadow(0 0 20px rgba(0,221,221,0.3))' }}>
-            <div className="w-48 h-48 md:w-64 md:h-64 bg-[var(--color-brand-surface-3)] border-4 border-white flex items-center justify-center">
-              <span className="font-pixel text-4xl text-[var(--color-brand-primary)]">🌍</span>
+            {/* Central Earth Node */}
+            <div className="absolute z-10 flex flex-col items-center justify-center" style={{ width: 0, height: 0, transform: 'rotateX(-70deg)' }}>
+              <div className="relative flex items-center justify-center" style={{ width: '160px', height: '160px', transform: 'translate(-50%, -50%)' }}>
+                <img src="/Earth-removebg-preview.png" alt="Planet Earth" className="w-full h-full object-contain drop-shadow-[0_0_30px_rgba(0,221,221,0.5)]" />
+                <div className="absolute -bottom-10 bg-white text-black font-pixel text-xs px-4 py-2 whitespace-nowrap shadow-[4px_4px_0px_0px_#ffabf3]">
+                  PLANET EARTH
+                </div>
+              </div>
             </div>
-            <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 bg-white text-black font-pixel text-sm px-4 py-2 whitespace-nowrap shadow-[4px_4px_0px_0px_#ffabf3]">
-              PLANET EARTH
-            </div>
-          </div>
 
-          {/* Satellite Links */}
-          <div className="absolute top-0 left-0 md:top-1/4 md:left-10 z-30">
-            <a href="mailto:contact@krissh.dev" className="flex flex-col items-center">
-              <div className="p-6 bg-[var(--color-brand-surface-2)] border-[3px] border-white shadow-[6px_6px_0px_0px_var(--color-brand-primary)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_var(--color-brand-primary)] transition-all">
-                <span className="text-4xl">📧</span>
-              </div>
-              <span className="font-pixel text-sm mt-4 text-white">GMAIL</span>
-            </a>
-          </div>
-
-          <div className="absolute top-0 right-0 md:top-1/4 md:right-10 z-30">
-            <a href="https://linkedin.com" className="flex flex-col items-center">
-              <div className="p-6 bg-[var(--color-brand-surface-2)] border-[3px] border-white shadow-[6px_6px_0px_0px_var(--color-brand-secondary)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_var(--color-brand-secondary)] transition-all">
-                <span className="text-4xl">🔗</span>
-              </div>
-              <span className="font-pixel text-sm mt-4 text-[var(--color-brand-secondary)]">LINKEDIN</span>
-            </a>
-          </div>
-
-          <div className="absolute bottom-0 left-0 md:bottom-1/4 md:left-10 z-30">
-            <a href="https://github.com" className="flex flex-col items-center">
-              <div className="p-6 bg-[var(--color-brand-surface-2)] border-[3px] border-white shadow-[6px_6px_0px_0px_var(--color-brand-tertiary)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_var(--color-brand-tertiary)] transition-all">
-                <span className="text-4xl">💻</span>
-              </div>
-              <span className="font-pixel text-sm mt-4 text-white">GITHUB</span>
-            </a>
-          </div>
-
-          <div className="absolute bottom-0 right-0 md:bottom-1/4 md:right-10 z-30">
-            <a href="https://x.com" className="flex flex-col items-center">
-              <div className="p-6 bg-[var(--color-brand-surface-2)] border-[3px] border-white shadow-[6px_6px_0px_0px_var(--color-brand-primary-tint)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_var(--color-brand-primary-tint)] transition-all">
-                <span className="text-4xl">𝕏</span>
-              </div>
-              <span className="font-pixel text-sm mt-4 text-[var(--color-brand-primary-tint)]">X / TWITTER</span>
-            </a>
+            {/* Satellite Links */}
+            {SATELLITES.map(sat => {
+              return (
+                <div 
+                  key={sat.id}
+                  ref={el => { satelliteRefs.current[sat.id] = el; }}
+                  className="absolute z-20 flex flex-col items-center justify-center"
+                  style={{
+                    left: '50%',
+                    top: '50%',
+                    width: 0,
+                    height: 0,
+                    transform: 'translate(0px, 0px) rotateX(-70deg)',
+                  }}
+                >
+                  <a 
+                    href={sat.href}
+                    className="group absolute flex flex-col items-center hover:scale-110 transition-transform"
+                    style={{ 
+                      width: '100px',
+                      height: '100px',
+                      left: '-50px',
+                      top: '-50px'
+                    }}
+                  >
+                    <div className="flex items-center justify-center w-full h-full bg-[var(--color-brand-surface-2)] border-[4px] border-white transition-all rounded-full" style={{ boxShadow: `6px 6px 0px 0px ${sat.color}` }}>
+                      {sat.icon.endsWith('.png') || sat.icon.endsWith('.svg') ? (
+                        <img src={sat.icon} alt={sat.label} className="w-12 h-12 object-contain" style={{ imageRendering: 'pixelated' }} />
+                      ) : (
+                        <span className="text-4xl">{sat.icon}</span>
+                      )}
+                    </div>
+                    <span className="absolute -bottom-10 font-pixel text-[10px] text-[var(--color-brand-text)] whitespace-nowrap opacity-60 group-hover:opacity-100 transition-opacity bg-[var(--color-brand-bg)] px-3 py-2 rounded border" style={{ borderColor: sat.color }}>
+                      {sat.label}
+                    </span>
+                  </a>
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* Info Cards */}
-        <section className="mt-32 w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
+        <section className="mt-8 w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 relative z-30">
           {/* Coordinates */}
           <div className="bg-[var(--color-brand-surface-2)] p-8 border-[3px] border-white shadow-[8px_8px_0px_0px_var(--color-brand-secondary)]">
             <h3 className="font-pixel text-base mb-2 flex items-center gap-2 text-white">COORDINATES</h3>
@@ -129,7 +219,7 @@ export default function Contact() {
         </section>
 
         {/* Contact Form */}
-        <section className="mt-16 w-full max-w-4xl">
+        <section className="mt-16 w-full max-w-4xl relative z-30">
           <div className="bg-[var(--color-brand-surface-2)] p-8 border-[3px] border-white shadow-[8px_8px_0px_0px_var(--color-brand-secondary)]">
             <h3 className="font-pixel text-xl text-white mb-6">TRANSMIT MESSAGE</h3>
             <form onSubmit={handleSubmit} className="space-y-4">

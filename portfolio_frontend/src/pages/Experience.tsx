@@ -12,9 +12,24 @@ interface Experience {
 }
 
 const DUMMY_EXPERIENCES: Experience[] = [
-  { id: 1, company: 'MARS SETTLEMENT CORP', role: 'SENIOR VOID ENGINEER', start_date: '2022', end_date: 'PRESENT', description: 'Leading the architectural design of distributed life-support systems across three Jovian moons. Orchestrating sub-zero server clusters and ensuring 99.99% uptime for terraforming algorithms.', tech_stack: 'Quantum-JS, NebulaDB, Rust' },
-  { id: 2, company: 'ORBITAL DYNAMICS', role: 'LEAD UX ASTRONAUT', start_date: '2019', end_date: '2022', description: 'Designed the first haptic-feedback cockpit interface for light-speed freighters. Conducted user research with deep-space mining crews to optimize emergency evacuation protocols.', tech_stack: 'Figma-OS, Haptics, DirectX-99' },
-  { id: 3, company: 'NEBULA SYSTEMS', role: 'SOLAR DEVELOPER', start_date: '2017', end_date: '2019', description: 'Pioneered energy-efficient rendering pipelines for solar-powered handheld devices. Optimized low-level C++ drivers for communication satellites in the asteroid belt.', tech_stack: 'C++, SolarNet, OpenGL' },
+  { 
+    id: 1, 
+    company: 'Calmi | Gen Z AI Therapist', 
+    role: 'Software Engineer Intern', 
+    start_date: 'June 2025', 
+    end_date: 'August 2025', 
+    description: 'Designed and shipped a user onboarding system adopted by 100,000+ users. Implemented a multi-step questionnaire to capture essential user data for personalization. Enhanced ML model performance by enabling tailored therapeutic recommendations from the first session.', 
+    tech_stack: 'Python, ML, React' 
+  },
+  { 
+    id: 2, 
+    company: 'CodSoft', 
+    role: 'Software Engineer Intern', 
+    start_date: 'June 2024', 
+    end_date: 'July 2024', 
+    description: 'Built and deployed responsive web projects, including a personal portfolio (200+ unique visitors) and a multi-sport facility landing page, enhancing branding, accessibility, and user experience. Delivered all project deliverables 90% ahead of schedule, demonstrating efficiency and technical expertise.', 
+    tech_stack: 'HTML, CSS, JavaScript' 
+  }
 ];
 
 const SHADOW_COLORS = ['#ffabf3', '#00fbfb', '#ffabf3'];

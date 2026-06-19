@@ -12,12 +12,42 @@ interface Project {
 }
 
 const DUMMY_PROJECTS: Project[] = [
-  { id: 1, title: 'NEBULA-X', description: 'A decentralized cloud computation engine designed for ultra-low latency space communication. Built using Rust and WebAssembly.', tech_stack: 'Rust, WASM', live_url: '#', github_url: '#', image: '' },
-  { id: 2, title: 'PULSE-WAVE', description: 'Real-time radio frequency visualization and decoding platform. It translates astronomical noise into structured visual data streams.', tech_stack: 'Python, WebGL', live_url: '#', github_url: '#', image: '' },
-  { id: 3, title: 'VOID-SHELL', description: 'A minimalist command-line environment for navigating expansive data lakes. Optimized for high-throughput exploration.', tech_stack: 'Go, gRPC', live_url: '#', github_url: '#', image: '' },
-  { id: 4, title: 'TITAN-OS', description: 'A robust operating system recreation designed to run on heritage spacecraft hardware while maintaining modern security standards.', tech_stack: 'C, ARM', live_url: '#', github_url: '#', image: '' },
-  { id: 5, title: 'ORBIT-X', description: 'A physics-driven simulation suite for predicting multi-body orbital mechanics with extreme precision and real-time rendering.', tech_stack: 'Three.js', live_url: '#', github_url: '#', image: '' },
-  { id: 6, title: 'STAR-GRID', description: 'Global distributed storage network utilizing interstellar light-modulation for long-term data archiving and redundancy.', tech_stack: 'IPFS, Rust', live_url: '#', github_url: '#', image: '' },
+  { 
+    id: 1, 
+    title: 'Tibbit – University Marketplace Platform', 
+    description: 'Built a secure student-only marketplace where users could buy, sell, with ID verification and JWT-protected APIs. Integrated a PostgreSQL database to manage users, listings, and conversations. Created a React frontend featuring dynamic listings, search filters, and private messaging for smooth user interaction. Engineered the system with scalability and security in mind to support expansion across multiple universities.', 
+    tech_stack: 'Django, PostgreSQL, React, JWT', 
+    live_url: '#', 
+    github_url: '#', 
+    image: '' 
+  },
+  { 
+    id: 2, 
+    title: 'DreamHive – Social + Productivity Platform', 
+    description: 'Founded and developed a hybrid social-productivity platform for entrepreneurs and innovators. Designed PostgreSQL-backed models for posts, productivity boards, and goal tracking. Built dashboards blending social interactions with productivity features to enhance engagement.', 
+    tech_stack: 'Django, Redis, WebSockets, React', 
+    live_url: '#', 
+    github_url: '#', 
+    image: '' 
+  },
+  { 
+    id: 3, 
+    title: 'Encrypted File Vault (LocalSafe)', 
+    description: 'Built a CLI-based file vault that securely encrypts files with AES-256 and protects access with a master password. Added auto-lock and SQLite-based metadata tracking to improve security and traceability. Designed modular CLI commands with argparse, making the tool easy to use and resilient to errors.', 
+    tech_stack: 'Python, SQLite, AES-256', 
+    live_url: '#', 
+    github_url: '#', 
+    image: '' 
+  },
+  { 
+    id: 4, 
+    title: 'F1 Race Winner Predictor', 
+    description: 'Built an ML pipeline predicting Formula 1 race outcomes using multi-season driver, team, and circuit data. Engineered predictive features and benchmarked XGBoost against logistic regression and random forests. Developed an interactive Streamlit dashboard to visualize predictions, performance trends, and scenario analysis.', 
+    tech_stack: 'XGBoost, Pandas, Supabase, Streamlit', 
+    live_url: '#', 
+    github_url: '#', 
+    image: '' 
+  }
 ];
 
 const MOON_COLORS = ['#00dddd', '#ffabf3', '#00dddd', '#ffabf3', '#00dddd', '#ffabf3'];
