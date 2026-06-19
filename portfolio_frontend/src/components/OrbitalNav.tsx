@@ -1,194 +1,165 @@
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getOrbitalPosition, getOrbitPathParams, type OrbitParams } from '../utils/orbitalPhysics';
 
-const ORBITS = [
-  { id: 'orbit-1', size: 300, duration: 20, direction: 'normal' },
-  { id: 'orbit-2', size: 450, duration: 30, direction: 'reverse' },
-  { id: 'orbit-3', size: 600, duration: 45, direction: 'normal' },
-];
+interface PlanetConfig {
+  id: string;
+  icon: string;
+  label: string;
+  path: string;
+  size: number;
+  orbitParams: OrbitParams;
+}
 
-const PLANETS = [
+const PLANETS: PlanetConfig[] = [
   {
     id: 'mars',
-    orbit: 0,
-    icon: 'rocket_launch',
+    icon: '/Mars-removebg-preview.png',
     label: 'MARS (SKILLS)',
     path: '/skills',
-    angle: 0,
-  },
-  {
-    id: 'jupiter',
-    orbit: 1,
-    icon: 'terminal',
-    label: 'JUPITER (EXP)',
-    path: '/experience',
-    angle: 60,
-  },
-  {
-    id: 'saturn',
-    orbit: 1,
-    icon: 'folder_open',
-    label: 'SATURN (PROJS)',
-    path: '/projects',
-    angle: 200,
+    size: 40,
+    orbitParams: { a: 150, e: 0.15, period: 8, initialM: 0 }
   },
   {
     id: 'earth',
-    orbit: 2,
-    icon: 'public',
+    icon: '/Earth-removebg-preview.png',
     label: 'EARTH (CONTACT)',
     path: '/contact',
-    angle: 120,
+    size: 55,
+    orbitParams: { a: 220, e: 0.2, period: 14, initialM: Math.PI / 2 }
   },
+  {
+    id: 'jupiter',
+    icon: '/Jupiter-removebg-preview.png',
+    label: 'JUPITER (EXP)',
+    path: '/experience',
+    size: 80,
+    orbitParams: { a: 320, e: 0.25, period: 22, initialM: Math.PI }
+  },
+  {
+    id: 'saturn',
+    icon: '/Saturn-removebg-preview.png',
+    label: 'SATURN (PROJS)',
+    path: '/projects',
+    size: 90,
+    orbitParams: { a: 450, e: 0.35, period: 34, initialM: Math.PI * 1.5 }
+  }
 ];
-
-const CSS_KEYFRAMES = `
-  @keyframes orbit-spin-1 {
-    from { transform: rotateX(75deg) rotate(0deg); }
-    to   { transform: rotateX(75deg) rotate(360deg); }
-  }
-  @keyframes orbit-spin-2 {
-    from { transform: rotateX(75deg) rotate(360deg); }
-    to   { transform: rotateX(75deg) rotate(0deg); }
-  }
-  @keyframes orbit-spin-3 {
-    from { transform: rotateX(75deg) rotate(0deg); }
-    to   { transform: rotateX(75deg) rotate(360deg); }
-  }
-  @keyframes counter-tilt-1 {
-    from { transform: rotate(0deg) rotateX(-75deg); }
-    to   { transform: rotate(-360deg) rotateX(-75deg); }
-  }
-  @keyframes counter-tilt-2 {
-    from { transform: rotate(-360deg) rotateX(-75deg); }
-    to   { transform: rotate(0deg) rotateX(-75deg); }
-  }
-  @keyframes counter-tilt-3 {
-    from { transform: rotate(0deg) rotateX(-75deg); }
-    to   { transform: rotate(-360deg) rotateX(-75deg); }
-  }
-  .orbital-planet-btn {
-    width: 40px;
-    height: 40px;
-    background: var(--color-brand-bg);
-    border: 3px solid white;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 6px 6px 0px 0px #ffabf3;
-    transition: transform 0.2s ease, background 0.2s ease;
-    position: relative;
-  }
-  .orbital-planet-btn:hover {
-    transform: scale(1.2) translateY(-10px);
-    background: var(--color-brand-primary);
-  }
-  .orbital-planet-btn .planet-label {
-    position: absolute;
-    bottom: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
-    color: var(--color-brand-text);
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    pointer-events: none;
-  }
-  .orbital-planet-btn:hover .planet-label {
-    opacity: 1;
-  }
-  .orbital-sun-btn {
-    width: 80px;
-    height: 80px;
-    border: 4px solid var(--color-brand-primary);
-    background: white;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 30px rgba(0, 251, 251, 0.4), 0 0 60px rgba(0, 251, 251, 0.2);
-    transition: transform 0.2s ease;
-    position: absolute;
-    z-index: 10;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  .orbital-sun-btn:hover {
-    transform: translate(-50%, -50%) scale(1.1);
-  }
-`;
 
 export default function OrbitalNav() {
   const navigate = useNavigate();
+  const [isZooming, setIsZooming] = useState(false);
+  const requestRef = useRef<number>(0);
+  
+  // Refs to the actual DOM elements for high-performance direct mutation
+  const planetRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  const updatePositions = (time: number) => {
+    PLANETS.forEach(planet => {
+      const pos = getOrbitalPosition(time, planet.orbitParams);
+      const el = planetRefs.current[planet.id];
+      if (el) {
+        // We translate the element perfectly on the 2D plane first, THEN stand it up so it faces the camera
+        el.style.transform = `translate(${pos.x}px, ${pos.y}px) rotateX(-75deg)`;
+      }
+    });
+    requestRef.current = requestAnimationFrame(updatePositions);
+  };
+
+  useEffect(() => {
+    requestRef.current = requestAnimationFrame(updatePositions);
+    return () => cancelAnimationFrame(requestRef.current);
+  }, []);
+
+  const handleNavigate = (path: string) => {
+    setIsZooming(true);
+    setTimeout(() => {
+      navigate(path);
+      setIsZooming(false);
+    }, 800);
+  };
 
   return (
-    <div style={{ position: 'relative', height: '600px', perspective: '1000px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div dangerouslySetInnerHTML={{ __html: `<style>${CSS_KEYFRAMES}</style>` }} />
-
-      {/* Orbit Rings */}
-      {ORBITS.map((orbit, i) => (
-        <div
-          key={orbit.id}
-          style={{
-            position: 'absolute',
-            width: `${orbit.size}px`,
-            height: `${orbit.size}px`,
-            border: '2px solid var(--color-brand-border-muted)',
-            borderRadius: '50%',
-            top: '50%',
-            left: '50%',
-            marginTop: `-${orbit.size / 2}px`,
-            marginLeft: `-${orbit.size / 2}px`,
-            animation: `orbit-spin-${i + 1} ${orbit.duration}s linear infinite ${orbit.direction}`,
-            transformStyle: 'preserve-3d',
-          }}
-        >
-          {/* Planets on this orbit */}
-          {PLANETS.filter((p) => p.orbit === i).map((planet) => {
-            const rad = (planet.angle * Math.PI) / 180;
-            const px = (orbit.size / 2) * Math.cos(rad) + orbit.size / 2 - 20;
-            const py = (orbit.size / 2) * Math.sin(rad) + orbit.size / 2 - 20;
+    <div 
+      className={`relative h-[700px] w-full flex items-center justify-center transition-all duration-1000 ease-in-out ${isZooming ? 'scale-[4] opacity-0 blur-md' : 'scale-100 opacity-100 blur-0'}`} 
+      style={{ perspective: '1000px' }}
+    >
+      <div className="relative w-full h-full flex items-center justify-center" style={{ transformStyle: 'preserve-3d', transform: 'rotateX(75deg)' }}>
+        
+        {/* SVG for Orbit Paths */}
+        <svg className="absolute overflow-visible w-0 h-0" style={{ zIndex: 0 }}>
+          {PLANETS.map(planet => {
+            const { a, b, c } = getOrbitPathParams(planet.orbitParams);
             return (
-              <div
-                key={planet.id}
-                style={{
-                  position: 'absolute',
-                  left: `${px}px`,
-                  top: `${py}px`,
-                  animation: `counter-tilt-${i + 1} ${orbit.duration}s linear infinite ${orbit.direction}`,
-                }}
-              >
-                <button
-                  className="orbital-planet-btn"
-                  onClick={() => navigate(planet.path)}
-                  aria-label={planet.label}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'white' }}>
-                    {planet.icon}
-                  </span>
-                  <span className="planet-label">{planet.label}</span>
-                </button>
-              </div>
+              <ellipse 
+                key={`${planet.id}-path`}
+                cx={-c} 
+                cy={0} 
+                rx={a} 
+                ry={b} 
+                fill="none" 
+                stroke="var(--color-brand-border-muted)" 
+                strokeWidth="2"
+                strokeDasharray="4 4"
+                opacity="0.5"
+              />
             );
           })}
-        </div>
-      ))}
+        </svg>
 
-      {/* Central Sun */}
-      <button
-        className="orbital-sun-btn"
-        onClick={() => navigate('/about')}
-        aria-label="About Me"
-      >
-        <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '14px', color: 'var(--color-brand-primary)' }}>
-          ME
-        </span>
-      </button>
+        {/* The Sun */}
+        <div 
+          className="absolute z-10 flex flex-col items-center justify-center transition-transform"
+          style={{ width: 0, height: 0, transform: 'rotateX(-75deg)' }}
+        >
+          <button 
+            onClick={() => handleNavigate('/about')}
+            className="group absolute flex items-center justify-center hover:scale-110 transition-transform"
+            style={{ width: '120px', height: '120px', left: '-60px', top: '-60px' }}
+            aria-label="About Me"
+          >
+            <img src="/Sun-removebg-preview.png" alt="The Sun" className="w-full h-full object-contain drop-shadow-[0_0_30px_rgba(254,0,254,0.6)]" />
+            <span className="absolute -bottom-8 font-pixel text-[10px] text-[var(--color-brand-primary)] whitespace-nowrap opacity-80 group-hover:opacity-100 transition-opacity">
+              THE SUN (ABOUT)
+            </span>
+          </button>
+        </div>
+
+        {/* Orbiting Planets */}
+        {PLANETS.map(planet => {
+          return (
+            <div 
+              key={planet.id}
+              ref={el => { planetRefs.current[planet.id] = el; }}
+              className="absolute z-20 flex flex-col items-center justify-center"
+              style={{
+                left: '50%',
+                top: '50%',
+                width: 0,
+                height: 0,
+                transform: 'translate(0px, 0px) rotateX(-75deg)', // Default start, immediately overridden by rAF
+              }}
+            >
+              <button 
+                onClick={() => handleNavigate(planet.path)}
+                className="group absolute flex items-center justify-center hover:scale-125 transition-transform"
+                style={{ 
+                  width: `${planet.size}px`, 
+                  height: `${planet.size}px`,
+                  left: `-${planet.size / 2}px`,
+                  top: `-${planet.size / 2}px`,
+                }}
+                aria-label={planet.label}
+              >
+                <img src={planet.icon} alt={planet.label} className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(0,251,251,0.5)]" />
+                <span className="absolute -bottom-8 font-pixel text-[8px] text-[var(--color-brand-text)] whitespace-nowrap opacity-60 group-hover:opacity-100 transition-opacity bg-[var(--color-brand-bg)] px-2 py-1 rounded border border-[var(--color-brand-primary)]">
+                  {planet.label}
+                </span>
+              </button>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
