@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import PageTransition from '../components/layout/PageTransition';
+import TopNavStrip from '../components/layout/TopNavStrip';
 
 interface Experience {
   id: number;
@@ -52,13 +53,8 @@ export default function Experience() {
 
   return (
     <PageTransition>
-      {/* Hero */}
-      <section className="relative w-full h-[400px] flex flex-col items-center justify-end overflow-hidden bg-gradient-to-b from-[var(--color-brand-surface-1)] to-[var(--color-brand-bg)]">
-        <div className="relative z-10 text-center mb-16 px-4">
-          <h1 className="font-pixel text-3xl md:text-4xl text-white mb-4" style={{ textShadow: '4px 4px 0px #fe00fe' }}>MISSION LOGS</h1>
-          <p className="font-sans text-lg text-[var(--color-brand-secondary)] uppercase tracking-[0.2em]">Navigating the Career Nebula</p>
-        </div>
-      </section>
+      <TopNavStrip />
+
 
       {/* Timeline */}
       <section className="max-w-7xl mx-auto px-8 py-8 relative">

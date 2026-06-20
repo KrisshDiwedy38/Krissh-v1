@@ -27,7 +27,7 @@ const SKILL_CATEGORIES = [
 export default function Skills() {
   return (
     <PlanetPageLayout title="SKILLS" planetColor="#ff4444">
-      <div className="w-full flex flex-col items-center">
+      <div className="w-full flex flex-col lg:flex-row lg:flex-wrap lg:justify-center items-center lg:items-start lg:gap-8">
         {SKILL_CATEGORIES.map(category => (
           <MoonItem 
             key={category.id} 
