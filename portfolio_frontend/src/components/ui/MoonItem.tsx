@@ -15,7 +15,7 @@ export default function MoonItem({ title, subtitle, previewImage, children }: Mo
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto my-12 flex flex-col items-center">
+    <div className="relative w-full lg:w-[30%] max-w-4xl mx-auto my-6 lg:my-12 flex flex-col items-center">
       
       {/* The Moon Button */}
       <AnimatePresence>
@@ -62,7 +62,7 @@ export default function MoonItem({ title, subtitle, previewImage, children }: Mo
                   <h3 className="font-pixel text-xl text-[var(--color-brand-primary)] mb-2">{title}</h3>
                   {subtitle && <p className="font-sans text-sm text-[var(--color-brand-text)] opacity-80 uppercase tracking-widest">{subtitle}</p>}
                 </div>
-                <Button variant="secondary" onClick={() => setIsExpanded(false)} className="!px-3 !py-1 !text-xs">
+                <Button variant="secondary" onClick={() => setIsExpanded(false)} className="!px-3 !py-2 md:!py-1 !text-xs min-h-[44px] md:min-h-0 flex items-center justify-center">
                   CLOSE
                 </Button>
               </div>
