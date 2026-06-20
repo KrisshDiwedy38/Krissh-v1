@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import PageTransition from '../components/layout/PageTransition';
+import TopNavStrip from '../components/layout/TopNavStrip';
 
 interface Project {
   id: number;
@@ -66,13 +67,9 @@ export default function Projects() {
 
   return (
     <PageTransition>
-      {/* Hero - just title, no image for now */}
-      <header className="relative w-full h-[400px] flex flex-col items-center justify-end overflow-hidden bg-gradient-to-b from-[var(--color-brand-surface-1)] to-[var(--color-brand-bg)]">
-        <div className="relative z-10 text-center mb-16 px-4">
-          <h1 className="font-pixel text-3xl md:text-4xl text-white mb-4" style={{ textShadow: '4px 4px 0px #ffabf3' }}>CELESTIAL ARCHIVE</h1>
-          <p className="font-sans text-lg text-[var(--color-brand-secondary)] font-bold tracking-widest uppercase">Navigating through the digital nebula</p>
-        </div>
-      </header>
+      <TopNavStrip />
+
+
 
       {/* Moon Grid */}
       <main className="max-w-7xl mx-auto px-8 py-20">
@@ -102,7 +99,7 @@ export default function Projects() {
       {selectedProject && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ backdropFilter: 'blur(8px)', background: 'rgba(5,5,21,0.8)' }} onClick={() => setSelectedProject(null)}>
           <div className="bg-[var(--color-brand-surface-2)] w-full max-w-2xl border-[3px] border-white shadow-[12px_12px_0px_0px_#ffabf3] p-8 relative" onClick={e => e.stopPropagation()}>
-            <button className="absolute top-4 right-4 text-white hover:text-[var(--color-brand-secondary)] transition-colors text-2xl" onClick={() => setSelectedProject(null)}>✕</button>
+            <button className="absolute top-2 right-2 md:top-4 md:right-4 text-white hover:text-[var(--color-brand-secondary)] transition-colors text-2xl min-w-[44px] min-h-[44px] flex items-center justify-center p-2" onClick={() => setSelectedProject(null)}>✕</button>
             <div className="flex flex-col md:flex-row gap-6">
               <div className="w-full md:w-1/2 border-[3px] border-white bg-black aspect-square flex items-center justify-center">
                 <span className="font-pixel text-6xl text-[var(--color-brand-primary)]">{selectedProject.title.charAt(0)}</span>
