@@ -10,12 +10,12 @@ export default function Home() {
         <section className="min-h-[calc(100vh-64px)] max-w-7xl mx-auto px-8 flex items-center">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center w-full">
             {/* Left: ASCII Portrait */}
-            <div className="flex justify-center md:justify-start">
+            <div className="hidden md:flex md:justify-start">
               <ASCIIHero />
             </div>
             {/* Right: Pixel Text */}
             <div className="text-center md:text-left space-y-2">
-              <h2 className="font-pixel text-3xl md:text-4xl text-white uppercase animate-pulse">HELLO</h2>
+              <h2 className="font-pixel text-3xl md:text-4xl text-white uppercase">HELLO</h2>
               <h1 className="font-pixel text-3xl md:text-4xl text-[var(--color-brand-secondary)] uppercase">I'M KRISSH</h1>
               <p className="font-sans text-lg text-[var(--color-brand-text)] opacity-70 max-w-md">
                 A celestial traveler architecting digital systems within the vacuum of the web.
