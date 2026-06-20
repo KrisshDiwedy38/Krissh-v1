@@ -1,9 +1,11 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AnimatePresence } from 'framer-motion';
+import { TransitionProvider, useTransitionContext } from './context/TransitionContext';
+import TransitionOverlay from './components/layout/TransitionOverlay';
 
 // Layouts
-import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Starfield from './components/layout/Starfield';
 
@@ -27,11 +29,93 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
     return <>{children}</>;
 };
 
+function AuthCluster() {
+    const { isAuthenticated, logout } = useAuth();
+    const navigate = useNavigate();
+
+    return (
+        <div className="fixed bottom-4 md:bottom-auto md:top-4 right-4 z-50 flex gap-3 items-center">
+            {isAuthenticated ? (
+                <>
+                    <button
+                        onClick={() => navigate('/admin')}
+                        className="min-h-[44px] flex items-center justify-center bg-white text-black px-4 py-2 border-[3px] border-black font-pixel uppercase text-[10px] sm:text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer"
+                    >
+                        Admin
+                    </button>
+                    <button
+                        onClick={logout}
+                        className="min-h-[44px] flex items-center justify-center bg-[var(--color-brand-primary)] text-black px-4 py-2 border-[3px] border-black font-pixel uppercase text-[10px] sm:text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer"
+                    >
+                        Logout
+                    </button>
+                </>
+            ) : (
+                <button
+                    onClick={() => navigate('/admin')}
+                    className="min-h-[44px] flex items-center justify-center bg-[var(--color-brand-primary)] text-black px-4 py-2 border-[3px] border-black font-pixel uppercase text-[10px] sm:text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer"
+                >
+                    Login
+                </button>
+            )}
+        </div>
+    );
+}
+
+function HomeButton() {
+    const location = useLocation();
+    const { triggerTransition, destinationCoords } = useTransitionContext();
+
+    // Only render on non-home pages
+    if (location.pathname === '/') return null;
+
+    const handleClick = () => {
+        const NAV_PLANETS = [
+            { id: 'sun', path: '/about' },
+            { id: 'mars', path: '/skills' },
+            { id: 'earth', path: '/contact' },
+            { id: 'jupiter', path: '/experience' },
+            { id: 'saturn', path: '/projects' }
+        ];
+        const currentPlanet = NAV_PLANETS.find(p => p.path === location.pathname);
+        const planetId = currentPlanet ? currentPlanet.id : 'sun';
+
+        const fallbackCoords = {
+            x: window.innerWidth / 2,
+            y: 84,
+            size: window.innerWidth < 768 ? 180 : 280
+        };
+
+        const startCoords = destinationCoords || fallbackCoords;
+
+        triggerTransition(planetId, startCoords, '/');
+    };
+
+    return (
+        <button
+            onClick={handleClick}
+            className="fixed bottom-4 md:bottom-auto md:top-4 left-4 z-50 min-h-[44px] flex items-center justify-center bg-white text-black px-4 py-2 border-[3px] border-black font-pixel uppercase text-[10px] sm:text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer"
+        >
+            Home
+        </button>
+    );
+}
+
+function ScrollToTop() {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+}
+
 function AnimatedRoutes() {
     const location = useLocation();
 
     return (
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
             <Routes location={location} key={location.pathname}>
                 <Route path="/" element={<Home />} />
                 <Route path="/projects" element={<Projects />} />
@@ -55,14 +139,19 @@ function App() {
     return (
         <AuthProvider>
             <BrowserRouter>
-                <div className="flex flex-col min-h-screen relative z-0">
-                    <Starfield />
-                    <Navbar />
-                    <main className="flex-grow">
-                        <AnimatedRoutes />
-                    </main>
-                    <Footer />
-                </div>
+                <ScrollToTop />
+                <TransitionProvider>
+                    <div className="flex flex-col min-h-screen relative z-0">
+                        <Starfield />
+                        <HomeButton />
+                        <AuthCluster />
+                        <TransitionOverlay />
+                        <main className="flex-grow">
+                            <AnimatedRoutes />
+                        </main>
+                        <Footer />
+                    </div>
+                </TransitionProvider>
             </BrowserRouter>
         </AuthProvider>
     );
