@@ -6,7 +6,7 @@ class ExperienceSerializer(BaseModelSerializer):
     class Meta(BaseModelSerializer.Meta):
         model = Experience
         fields = BaseModelSerializer.Meta.read_only_fields + [
-            'company', 'role', 'description', 'start_date', 'end_date',
+            'company', 'role', 'location', 'employment_type', 'description', 'start_date', 'end_date',
             'logo', 'status', 'order'
         ]
 

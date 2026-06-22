@@ -7,8 +7,18 @@ class Experience(models.Model):
         ('PUBLISHED', 'Published')
     ]
 
+    EMPLOYMENT_TYPE_CHOICES = [
+        ('FULL_TIME', 'Full-time'),
+        ('PART_TIME', 'Part-time'),
+        ('INTERNSHIP', 'Internship'),
+        ('FREELANCE', 'Freelance'),
+        ('CONTRACT', 'Contract'),
+    ]
+
     company = models.CharField(max_length=255)
     role = models.CharField(max_length=255)
+    location = models.CharField(max_length=255, blank=True)
+    employment_type = models.CharField(max_length=50, choices=EMPLOYMENT_TYPE_CHOICES, default='FULL_TIME')
     description = models.TextField()
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
