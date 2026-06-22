@@ -84,14 +84,16 @@ export default function TransitionOverlay() {
             width: 250,
             height: 250,
             scale: 15,
-            zIndex: 99
+            zIndex: 99,
+            clipPath: 'inset(0% -20% -20% -20%)'
           }}
           animate={{
             left: destinationCoords.x - destinationCoords.size / 2,
             top: destinationCoords.y - destinationCoords.size / 2,
             width: destinationCoords.size,
             height: destinationCoords.size,
-            scale: 1
+            scale: 1,
+            clipPath: 'inset(40% -20% -20% -20%)'
           }}
           transition={{
             duration: 0.6,
@@ -102,7 +104,7 @@ export default function TransitionOverlay() {
           }}
           className="pointer-events-none"
         >
-          <img src={planetImg} alt="" className="w-full h-full object-contain" />
+          <img src={planetImg} alt="" className="w-full h-full object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]" />
         </motion.div>
       )}
     </AnimatePresence>

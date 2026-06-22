@@ -71,6 +71,22 @@ export default function TopNavStrip() {
     };
   }, [currentPlanet.id, transitionState]);
 
+  // Keyboard Navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input field
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      if (e.key === 'ArrowLeft') {
+        document.getElementById('nav-prev-planet')?.click();
+      } else if (e.key === 'ArrowRight') {
+        document.getElementById('nav-next-planet')?.click();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [prevPlanet, nextPlanet]);
+
   const handlePlanetClick = (e: React.MouseEvent<HTMLButtonElement>, planet: StripPlanet, direction: 'left' | 'right') => {
     const rect = e.currentTarget.getBoundingClientRect();
     const isMobile = window.innerWidth < 768;
@@ -114,7 +130,8 @@ export default function TopNavStrip() {
         
         {/* Left Flanking Planet */}
         <motion.button
-          onClick={(e) => handlePlanetClick(e, prevPlanet, 'left')}
+          id="nav-prev-planet"
+          onClick={(e) => handlePlanetClick(e as any, prevPlanet, 'left')}
           initial={leftInitial}
           animate={{ opacity: 0.65, x: 0, scale: 1 }}
           exit={transitionDirection === 'right' ? { opacity: 0, x: -150, scale: 0.8 } : undefined}
@@ -141,7 +158,7 @@ export default function TopNavStrip() {
             {/* Full Planet Wrapper (with ref for destination coords calculation) */}
             <div 
               ref={placeholderRef}
-              className="absolute w-[180px] h-[180px] md:w-[280px] md:h-[280px] top-[-72px] md:top-[-112px] left-0 [clip-path:inset(72px_-50px_-50px_-50px)] md:[clip-path:inset(112px_-50px_-50px_-50px)]"
+              className="absolute w-[180px] h-[180px] md:w-[280px] md:h-[280px] top-[-72px] md:top-[-112px] left-0 [clip-path:inset(40%_-20%_-20%_-20%)]"
             >
               {showCenterPlanet && (
                 <motion.div
@@ -175,7 +192,8 @@ export default function TopNavStrip() {
 
         {/* Right Flanking Planet */}
         <motion.button
-          onClick={(e) => handlePlanetClick(e, nextPlanet, 'right')}
+          id="nav-next-planet"
+          onClick={(e) => handlePlanetClick(e as any, nextPlanet, 'right')}
           initial={rightInitial}
           animate={{ opacity: 0.65, x: 0, scale: 1 }}
           exit={transitionDirection === 'left' ? { opacity: 0, x: 150, scale: 0.8 } : undefined}
