@@ -3,9 +3,52 @@ from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .validators import validate_image
 from django.core.files.storage import default_storage
+from rest_framework import viewsets
+from .models import AboutMe, SkillCategory, Skill
+from .serializers import AboutMeSerializer, SkillCategorySerializer, SkillSerializer
+
+class AboutMePublicView(APIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        about, created = AboutMe.objects.get_or_create(id=1)
+        serializer = AboutMeSerializer(about, context={'request': request})
+        return Response(serializer.data)
+
+class AboutMeAdminView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+    
+    def get(self, request):
+        about, created = AboutMe.objects.get_or_create(id=1)
+        serializer = AboutMeSerializer(about, context={'request': request})
+        return Response(serializer.data)
+        
+    def patch(self, request):
+        about, created = AboutMe.objects.get_or_create(id=1)
+        serializer = AboutMeSerializer(about, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+class SkillCategoryPublicViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = SkillCategory.objects.all()
+    serializer_class = SkillCategorySerializer
+    permission_classes = [AllowAny]
+
+class SkillCategoryAdminViewSet(viewsets.ModelViewSet):
+    queryset = SkillCategory.objects.all()
+    serializer_class = SkillCategorySerializer
+    permission_classes = [IsAuthenticated]
+
+class SkillAdminViewSet(viewsets.ModelViewSet):
+    queryset = Skill.objects.all()
+    serializer_class = SkillSerializer
+    permission_classes = [IsAuthenticated]
 
 class StandaloneImageUploadView(APIView):
     """
@@ -30,3 +73,57 @@ class StandaloneImageUploadView(APIView):
         url = request.build_absolute_uri(settings.MEDIA_URL + path)
         
         return Response({"url": url})
+
+import resend
+from django.utils.decorators import method_decorator
+from django_ratelimit.decorators import ratelimit
+
+class ContactView(APIView):
+    """
+    POST /api/contact/
+    Accepts name, email, message. Sends email via Resend. Rate limited to 5/hour per IP.
+    """
+    permission_classes = [AllowAny]
+
+    @method_decorator(ratelimit(key='ip', rate='2/h', method='POST', block=True))
+    @method_decorator(ratelimit(key='ip', rate='3/d', method='POST', block=True))
+    def post(self, request, format=None):
+        name = request.data.get('name')
+        email = request.data.get('email')
+        message = request.data.get('message')
+
+        if not all([name, email, message]):
+            return Response({"error": "Name, email, and message are required."}, status=400)
+
+        from decouple import config
+        resend.api_key = config('VITE_RESEND_API_KEY', default='')
+        receiver_email = config('VITE_RECEIVER_EMAIL', default='')
+
+        if not resend.api_key or not receiver_email:
+            return Response({"error": "Server configuration error."}, status=500)
+
+        html_content = f"""
+            <div style="font-family: monospace; background-color: #050515; color: #00dddd; padding: 20px; border: 3px solid #ffffff; box-shadow: 6px 6px 0px 0px #ffabf3;">
+              <h2 style="color: #ffabf3; text-transform: uppercase;">Incoming Subspace Transmission</h2>
+              <hr style="border-color: #00dddd;" />
+              <p><strong>CALLSIGN:</strong> {name}</p>
+              <p><strong>FREQUENCY (Email):</strong> {email}</p>
+              <hr style="border-color: #00dddd;" />
+              <p><strong>PAYLOAD:</strong></p>
+              <div style="background-color: #000; padding: 15px; border-left: 4px solid #ffabf3; color: #ffffff;">
+                {message}
+              </div>
+              <p style="margin-top: 20px; font-size: 12px; color: #666;">Transmitted via Celestial Neobrutalism Portfolio</p>
+            </div>
+        """
+
+        try:
+            r = resend.Emails.send({
+                "from": "Acme <onboarding@resend.dev>",
+                "to": receiver_email,
+                "subject": f"Incoming transmission from {name}",
+                "html": html_content
+            })
+            return Response({"success": "Transmission sent.", "id": r.get('id')})
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
