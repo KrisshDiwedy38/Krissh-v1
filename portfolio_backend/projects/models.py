@@ -15,6 +15,7 @@ class Project(models.Model):
 
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, blank=True, max_length=255)
+    short_description = models.CharField(max_length=255, blank=True)
     description = models.TextField()
     tech_stack = models.JSONField(default=list)  # stored as JSON array, e.g. ["Python", "React"]
     github_url = models.URLField(blank=True, null=True)
@@ -22,6 +23,7 @@ class Project(models.Model):
     thumbnail = models.ImageField(upload_to='projects/thumbnails/', validators=[validate_image])
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='DRAFT')
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='OTHER')
+    featured = models.BooleanField(default=False)
     order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

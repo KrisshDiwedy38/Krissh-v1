@@ -11,8 +11,8 @@ class ProjectListSerializer(BaseModelSerializer):
     class Meta(BaseModelSerializer.Meta):
         model = Project
         fields = BaseModelSerializer.Meta.read_only_fields + [
-            'title', 'description', 'tech_stack', 'github_url', 'live_url',
-            'thumbnail', 'status', 'category', 'order'
+            'title', 'short_description', 'description', 'tech_stack', 'github_url', 'live_url',
+            'thumbnail', 'status', 'category', 'featured', 'order'
         ]
 
 class ProjectDetailSerializer(ProjectListSerializer):
