@@ -2,11 +2,16 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/layout/PageTransition';
 import TopNavStrip from '../components/layout/TopNavStrip';
+import api from '../api';
 
 interface AboutData {
   bio: string;
   profile_image: string;
   resume_url: string;
+  title: string;
+  core_skill: string;
+  weapon: string;
+  base: string;
 }
 
 export default function About() {
@@ -14,13 +19,12 @@ export default function About() {
   const [about, setAbout] = useState<AboutData | null>(null);
 
   useEffect(() => {
-    fetch('/api/about/')
-      .then(r => r.json())
-      .then(data => setAbout(data))
-      .catch(() => {});
+    api.get('/about/')
+      .then(res => setAbout(res.data))
+      .catch(err => console.error('Failed to fetch about', err));
   }, []);
 
-  const bio = about?.bio || `A creative explorer operating at the intersection of Structural Reality and Celestial Aesthetics. I build digital experiences that refuse to blend in. My work is a love letter to the era of 8-bit machines, redefined for the expansive mystery of the deep space modern web.`;
+  const bio = about?.bio || '';
 
   return (
     <PageTransition>
@@ -48,7 +52,7 @@ export default function About() {
           <div className="md:col-span-7 flex flex-col justify-between">
             <div className="neobrutal-card h-full flex flex-col justify-center p-4 md:p-8">
               <div className="mb-6">
-                <h2 className="font-pixel text-2xl text-[var(--color-brand-secondary)] mb-4">The Architect</h2>
+                <h2 className="font-pixel text-2xl text-[var(--color-brand-secondary)] mb-4">{about?.title || 'The Architect'}</h2>
                 <p className="font-sans text-lg text-[var(--color-brand-text)] leading-relaxed">
                   {bio}
                 </p>
@@ -56,15 +60,15 @@ export default function About() {
               <div className="space-y-4">
                 <div className="flex items-center space-x-4 border-b-2 border-[var(--color-brand-border-muted)] pb-2">
                   <span className="text-[var(--color-brand-primary)]">⭐</span>
-                  <p className="font-sans font-bold text-sm text-[var(--color-brand-text)] opacity-70 uppercase">Core: Celestial Neobrutalism</p>
+                  <p className="font-sans font-bold text-sm text-[var(--color-brand-text)] opacity-70 uppercase">Core: {about?.core_skill || 'Celestial Neobrutalism'}</p>
                 </div>
                 <div className="flex items-center space-x-4 border-b-2 border-[var(--color-brand-border-muted)] pb-2">
                   <span className="text-[var(--color-brand-secondary)]">💻</span>
-                  <p className="font-sans font-bold text-sm text-[var(--color-brand-text)] opacity-70 uppercase">Weapon: Modern Frontend & Shaders</p>
+                  <p className="font-sans font-bold text-sm text-[var(--color-brand-text)] opacity-70 uppercase">Weapon: {about?.weapon || 'Modern Frontend & Shaders'}</p>
                 </div>
                 <div className="flex items-center space-x-4">
                   <span className="text-[var(--color-brand-tertiary)]">🌐</span>
-                  <p className="font-sans font-bold text-sm text-[var(--color-brand-text)] opacity-70 uppercase">Base: Digital Nebula 0x4</p>
+                  <p className="font-sans font-bold text-sm text-[var(--color-brand-text)] opacity-70 uppercase">Base: {about?.base || 'Digital Nebula 0x4'}</p>
                 </div>
               </div>
             </div>

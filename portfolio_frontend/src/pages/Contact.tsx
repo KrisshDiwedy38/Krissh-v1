@@ -18,7 +18,7 @@ const SATELLITES: SatelliteConfig[] = [
     id: 'gmail',
     icon: '/Gmail_Logo.png',
     label: 'GMAIL',
-    href: 'mailto:contact@krissh.dev',
+    href: import.meta.env.VITE_GMAIL_URL || '#',
     orbitParams: { a: 160, e: 0.2, period: 10, initialM: 0 },
     color: 'var(--color-brand-primary)',
     size: 60,
@@ -27,7 +27,7 @@ const SATELLITES: SatelliteConfig[] = [
     id: 'linkedin',
     icon: '/LinkedIn_Logo.png',
     label: 'LINKEDIN',
-    href: 'https://linkedin.com',
+    href: import.meta.env.VITE_LINKEDIN_URL || '#',
     orbitParams: { a: 220, e: 0.25, period: 16, initialM: Math.PI / 2 },
     color: 'var(--color-brand-secondary)',
     size: 60,
@@ -36,7 +36,7 @@ const SATELLITES: SatelliteConfig[] = [
     id: 'github',
     icon: '/Github_Logo.png',
     label: 'GITHUB',
-    href: 'https://github.com',
+    href: import.meta.env.VITE_GITHUB_URL || '#',
     orbitParams: { a: 280, e: 0.3, period: 24, initialM: Math.PI },
     color: 'var(--color-brand-tertiary)',
     size: 60,
@@ -45,7 +45,7 @@ const SATELLITES: SatelliteConfig[] = [
     id: 'twitter',
     icon: '/X_Logo.png',
     label: 'X / TWITTER',
-    href: 'https://x.com',
+    href: import.meta.env.VITE_TWITTER_URL || '#',
     orbitParams: { a: 300, e: 0.3, period: 34, initialM: Math.PI * 1.5 },
     color: 'var(--color-brand-primary-tint)',
     size: 60,
@@ -112,8 +112,9 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setStatus('TRANSMITTING...');
     try {
-      const res = await fetch('/api/contact/', {
+      const res = await fetch('http://127.0.0.1:8000/api/contact/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -122,9 +123,12 @@ export default function Contact() {
         setStatus('TRANSMISSION COMPLETE');
         setFormData({ name: '', email: '', message: '' });
       } else {
+        const errorData = await res.json();
+        console.error('API Error:', errorData);
         setStatus('SIGNAL LOST — TRY AGAIN');
       }
-    } catch {
+    } catch (error) {
+      console.error('Fetch Error:', error);
       setStatus('SIGNAL LOST — TRY AGAIN');
     }
   };

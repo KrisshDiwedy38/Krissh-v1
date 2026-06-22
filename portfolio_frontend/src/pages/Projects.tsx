@@ -1,68 +1,30 @@
 import { useState, useEffect } from 'react';
 import PageTransition from '../components/layout/PageTransition';
 import TopNavStrip from '../components/layout/TopNavStrip';
+import api from '../api';
 
 interface Project {
   id: number;
   title: string;
   description: string;
-  tech_stack: string;
+  short_description?: string;
+  tech_stack: string | string[];
   live_url: string;
   github_url: string;
   image: string;
 }
 
-const DUMMY_PROJECTS: Project[] = [
-  { 
-    id: 1, 
-    title: 'Tibbit – University Marketplace Platform', 
-    description: 'Built a secure student-only marketplace where users could buy, sell, with ID verification and JWT-protected APIs. Integrated a PostgreSQL database to manage users, listings, and conversations. Created a React frontend featuring dynamic listings, search filters, and private messaging for smooth user interaction. Engineered the system with scalability and security in mind to support expansion across multiple universities.', 
-    tech_stack: 'Django, PostgreSQL, React, JWT', 
-    live_url: '#', 
-    github_url: '#', 
-    image: '' 
-  },
-  { 
-    id: 2, 
-    title: 'DreamHive – Social + Productivity Platform', 
-    description: 'Founded and developed a hybrid social-productivity platform for entrepreneurs and innovators. Designed PostgreSQL-backed models for posts, productivity boards, and goal tracking. Built dashboards blending social interactions with productivity features to enhance engagement.', 
-    tech_stack: 'Django, Redis, WebSockets, React', 
-    live_url: '#', 
-    github_url: '#', 
-    image: '' 
-  },
-  { 
-    id: 3, 
-    title: 'Encrypted File Vault (LocalSafe)', 
-    description: 'Built a CLI-based file vault that securely encrypts files with AES-256 and protects access with a master password. Added auto-lock and SQLite-based metadata tracking to improve security and traceability. Designed modular CLI commands with argparse, making the tool easy to use and resilient to errors.', 
-    tech_stack: 'Python, SQLite, AES-256', 
-    live_url: '#', 
-    github_url: '#', 
-    image: '' 
-  },
-  { 
-    id: 4, 
-    title: 'F1 Race Winner Predictor', 
-    description: 'Built an ML pipeline predicting Formula 1 race outcomes using multi-season driver, team, and circuit data. Engineered predictive features and benchmarked XGBoost against logistic regression and random forests. Developed an interactive Streamlit dashboard to visualize predictions, performance trends, and scenario analysis.', 
-    tech_stack: 'XGBoost, Pandas, Supabase, Streamlit', 
-    live_url: '#', 
-    github_url: '#', 
-    image: '' 
-  }
-];
-
-const MOON_COLORS = ['#00dddd', '#ffabf3', '#00dddd', '#ffabf3', '#00dddd', '#ffabf3'];
-const SUBTITLES = ['Autonomous Core', 'Signal Decoder', 'Terminal Interface', 'Legacy Engine', 'Dynamics Tool', 'Asset Cluster'];
-
 export default function Projects() {
-  const [projects, setProjects] = useState<Project[]>(DUMMY_PROJECTS);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
+  const MOON_COLORS = ['#00dddd', '#ffabf3', '#00dddd', '#ffabf3', '#00dddd', '#ffabf3'];
+  const SUBTITLES = ['Autonomous Core', 'Signal Decoder', 'Terminal Interface', 'Legacy Engine', 'Dynamics Tool', 'Asset Cluster'];
+
   useEffect(() => {
-    fetch('/api/projects/')
-      .then(r => r.json())
-      .then(data => { if (data.length) setProjects(data); })
-      .catch(() => { });
+    api.get('/projects/')
+      .then(res => { if (res.data.length) setProjects(res.data); })
+      .catch(err => console.error('Failed to fetch projects', err));
   }, []);
 
   return (
@@ -88,7 +50,9 @@ export default function Projects() {
               </div>
               <div className="mt-8 text-center">
                 <h3 className="font-pixel text-base text-[var(--color-brand-secondary)]">{project.title}</h3>
-                <p className="font-sans text-xs text-[var(--color-brand-text)] opacity-50 mt-2 uppercase tracking-tighter">{SUBTITLES[i % SUBTITLES.length]}</p>
+                <p className="font-sans text-xs text-[var(--color-brand-text)] opacity-50 mt-2 uppercase tracking-tighter">
+                  {project.short_description || SUBTITLES[i % SUBTITLES.length]}
+                </p>
               </div>
             </div>
           ))}
@@ -105,7 +69,7 @@ export default function Projects() {
                 <span className="font-pixel text-6xl text-[var(--color-brand-primary)]">{selectedProject.title.charAt(0)}</span>
               </div>
               <div className="w-full md:w-1/2 flex flex-col justify-center">
-                <span className="font-sans text-xs text-[var(--color-brand-primary-tint)] uppercase mb-2">SYSTEM // {selectedProject.tech_stack}</span>
+                <span className="font-sans text-xs text-[var(--color-brand-primary-tint)] uppercase mb-2">SYSTEM // {Array.isArray(selectedProject.tech_stack) ? selectedProject.tech_stack.join(', ') : selectedProject.tech_stack}</span>
                 <h2 className="font-pixel text-2xl text-white mb-4">{selectedProject.title}</h2>
                 <p className="font-sans text-sm text-[var(--color-brand-text)] opacity-70 mb-8">{selectedProject.description}</p>
                 <div className="flex flex-col gap-4">

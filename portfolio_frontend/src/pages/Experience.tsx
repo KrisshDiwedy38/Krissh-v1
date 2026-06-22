@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PageTransition from '../components/layout/PageTransition';
 import TopNavStrip from '../components/layout/TopNavStrip';
+import api from '../api';
 
 interface Experience {
   id: number;
@@ -9,46 +10,23 @@ interface Experience {
   start_date: string;
   end_date: string;
   description: string;
-  tech_stack: string;
 }
 
-const DUMMY_EXPERIENCES: Experience[] = [
-  { 
-    id: 1, 
-    company: 'Calmi | Gen Z AI Therapist', 
-    role: 'Software Engineer Intern', 
-    start_date: 'June 2025', 
-    end_date: 'August 2025', 
-    description: 'Designed and shipped a user onboarding system adopted by 100,000+ users. Implemented a multi-step questionnaire to capture essential user data for personalization. Enhanced ML model performance by enabling tailored therapeutic recommendations from the first session.', 
-    tech_stack: 'Python, ML, React' 
-  },
-  { 
-    id: 2, 
-    company: 'CodSoft', 
-    role: 'Software Engineer Intern', 
-    start_date: 'June 2024', 
-    end_date: 'July 2024', 
-    description: 'Built and deployed responsive web projects, including a personal portfolio (200+ unique visitors) and a multi-sport facility landing page, enhancing branding, accessibility, and user experience. Delivered all project deliverables 90% ahead of schedule, demonstrating efficiency and technical expertise.', 
-    tech_stack: 'HTML, CSS, JavaScript' 
-  }
-];
-
-const SHADOW_COLORS = ['#ffabf3', '#00fbfb', '#ffabf3'];
-const BORDER_COLORS = ['var(--color-brand-secondary)', 'var(--color-brand-primary-tint)', 'var(--color-brand-tertiary)'];
-const BADGE_STYLES = [
-  { bg: 'bg-[var(--color-brand-secondary)]', text: 'text-[var(--color-brand-on-secondary)]' },
-  { bg: 'bg-[var(--color-brand-primary)]', text: 'text-black' },
-  { bg: 'bg-[var(--color-brand-tertiary)]', text: 'text-black' },
-];
-
 export default function Experience() {
-  const [experiences, setExperiences] = useState<Experience[]>(DUMMY_EXPERIENCES);
+  const [experiences, setExperiences] = useState<Experience[]>([]);
+
+  const SHADOW_COLORS = ['#ffabf3', '#00fbfb', '#ffabf3'];
+  const BORDER_COLORS = ['var(--color-brand-secondary)', 'var(--color-brand-primary-tint)', 'var(--color-brand-tertiary)'];
+  const BADGE_STYLES = [
+    { bg: 'bg-[var(--color-brand-secondary)]', text: 'text-[var(--color-brand-on-secondary)]' },
+    { bg: 'bg-[var(--color-brand-primary)]', text: 'text-black' },
+    { bg: 'bg-[var(--color-brand-tertiary)]', text: 'text-black' },
+  ];
 
   useEffect(() => {
-    fetch('/api/experience/')
-      .then(r => r.json())
-      .then(data => { if (data.length) setExperiences(data); })
-      .catch(() => {});
+    api.get('/experience/')
+      .then(res => { if (res.data.length) setExperiences(res.data); })
+      .catch(err => console.error('Failed to fetch experience', err));
   }, []);
 
   return (
@@ -87,11 +65,6 @@ export default function Experience() {
                 <p className="font-sans text-sm text-[var(--color-brand-text)] opacity-70 mb-6 border-l-4 pl-4" style={{ borderColor: SHADOW_COLORS[i % SHADOW_COLORS.length] }}>
                   {exp.description}
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  {exp.tech_stack.split(',').map(tech => (
-                    <span key={tech.trim()} className="px-3 py-1 border-2 border-[var(--color-brand-border-muted)] font-sans text-xs uppercase text-[var(--color-brand-text)] opacity-60">{tech.trim()}</span>
-                  ))}
-                </div>
               </div>
             </div>
           ))}
