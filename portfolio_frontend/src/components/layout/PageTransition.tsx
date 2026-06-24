@@ -35,36 +35,34 @@ export default function PageTransition({ children, className = '' }: { children:
 
   if (transitionType === 'home-to-page') {
     // Zoom-fill entry: slide up from below
-    initial = { opacity: 0, y: 150 };
-    animate = { opacity: 1, y: 0 };
-    exit = { opacity: 0, scale: 1.02, position: 'absolute', width: '100%' };
-    transition = { duration: 0.7, ease: [0.25, 0.1, 0.25, 1] };
+    initial = { opacity: 0, y: 100 };
+    animate = { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.0, 0.0, 0.2, 1] } };
+    exit = { opacity: 0, position: 'absolute', width: '100%', transition: { duration: 0.2, ease: [0.4, 0.0, 1, 1] } };
+    transition = {};
   } else if (transitionType === 'page-to-home') {
-    // Simple fade
+    // Simple fade out page, Home fades in
     initial = { opacity: 0 };
-    animate = { opacity: 1 };
-    exit = { opacity: 0, position: 'absolute', width: '100%' };
-    transition = { duration: 0.3, ease: 'easeOut' };
+    animate = { opacity: 1, transition: { duration: 0.3, ease: 'easeOut', delay: 0.1 } };
+    exit = { opacity: 0, position: 'absolute', width: '100%', transition: { duration: 0.2, ease: 'easeIn' } };
+    transition = {};
   } else if (transitionType === 'page-to-page') {
-    // Horizontal sliding page transition
+    // Spatial page transition
     if (transitionDirection === 'left') {
-      // Shifting clockwise: new page slides in from left, old page exits to right
-      initial = { opacity: 0, x: '-100%' };
-      animate = { opacity: 1, x: 0 };
-      exit = { opacity: 0, x: '100%', position: 'absolute', width: '100%' };
+      initial = { opacity: 0, x: '-50px' };
+      animate = { opacity: 1, x: 0, transition: { duration: 0.3, ease: [0.0, 0.0, 0.2, 1] } };
+      exit = { opacity: 0, x: '50px', position: 'absolute', width: '100%', transition: { duration: 0.2, ease: [0.4, 0.0, 1, 1] } };
     } else {
-      // Shifting counter-clockwise: new page slides in from right, old page exits to left
-      initial = { opacity: 0, x: '100%' };
-      animate = { opacity: 1, x: 0 };
-      exit = { opacity: 0, x: '-100%', position: 'absolute', width: '100%' };
+      initial = { opacity: 0, x: '50px' };
+      animate = { opacity: 1, x: 0, transition: { duration: 0.3, ease: [0.0, 0.0, 0.2, 1] } };
+      exit = { opacity: 0, x: '-50px', position: 'absolute', width: '100%', transition: { duration: 0.2, ease: [0.4, 0.0, 1, 1] } };
     }
-    transition = { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] };
+    transition = {}; // Handled per-property above
   } else {
-    // Fallback standard transitions
-    initial = { opacity: 0, scale: 0.98 };
-    animate = { opacity: 1, scale: 1 };
-    exit = { opacity: 0, scale: 1.02, position: 'absolute', width: '100%' };
-    transition = { duration: 0.3, ease: 'easeOut' };
+    // Fallback standard transitions (e.g. Portfolio <-> Admin)
+    initial = { opacity: 0 };
+    animate = { opacity: 1, transition: { duration: 0.25, ease: 'easeIn', delay: 0.1 } };
+    exit = { opacity: 0, position: 'absolute', width: '100%', transition: { duration: 0.2, ease: 'easeOut' } };
+    transition = {}; // Handled per-property above
   }
 
   return (

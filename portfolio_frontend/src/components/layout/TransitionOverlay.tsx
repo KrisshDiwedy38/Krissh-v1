@@ -39,7 +39,7 @@ export default function TransitionOverlay() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: transitionState === 'departing' ? 1 : 0 }}
-        transition={{ duration: 0.6, ease: 'easeInOut' }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="fixed inset-0 bg-[var(--color-brand-bg)] z-[98] pointer-events-none"
       />
 
@@ -64,7 +64,7 @@ export default function TransitionOverlay() {
             scale: 15
           }}
           transition={{
-            duration: 0.7,
+            duration: 0.5,
             ease: [0.25, 0.1, 0.25, 1] // Matches orbital system easing curves
           }}
           className="pointer-events-none"
@@ -96,7 +96,7 @@ export default function TransitionOverlay() {
             clipPath: 'inset(40% -20% -20% -20%)'
           }}
           transition={{
-            duration: 0.6,
+            duration: 0.5,
             ease: [0.25, 0.1, 0.25, 1]
           }}
           onAnimationComplete={() => {
