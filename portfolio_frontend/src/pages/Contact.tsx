@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import PageTransition from '../components/layout/PageTransition';
-import TopNavStrip from '../components/layout/TopNavStrip';
 import { getOrbitalPosition, getOrbitPathParams, type OrbitParams } from '../utils/orbitalPhysics';
 
 interface SatelliteConfig {
@@ -90,25 +89,6 @@ export default function Contact() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    setGlitchText(`${signalStrength}%`);
-
-    const glitchTimer = setInterval(() => {
-      if (Math.random() > 0.6) {
-        setIsGlitching(true);
-        const glitchChars = ['$$%', 'ERR', '9X%', '!!%', '--%', '89%'];
-        const randomGlitch = glitchChars[Math.floor(Math.random() * glitchChars.length)];
-        setGlitchText(randomGlitch);
-
-        setTimeout(() => {
-          setGlitchText(`${signalStrength}%`);
-          setIsGlitching(false);
-        }, 150 + Math.random() * 200);
-      }
-    }, 4000);
-
-    return () => clearInterval(glitchTimer);
-  }, [signalStrength]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,21 +115,7 @@ export default function Contact() {
 
   return (
     <PageTransition>
-      <TopNavStrip />
       <main className="min-h-screen pt-8 pb-8 px-8 flex flex-col items-center justify-center relative overflow-hidden">
-        {/* Glitchy Signal Strength Status */}
-        <div
-          className={`hidden md:flex absolute top-44 md:top-48 right-6 md:right-12 z-40 flex-col items-end font-pixel text-[10px] md:text-xs select-none tracking-widest pointer-events-none transition-all duration-75 ${isGlitching ? 'text-[var(--color-brand-secondary)] scale-95 skew-x-6' : 'text-[var(--color-brand-primary)]'
-            }`}
-        >
-          <div className="flex items-center gap-1.5 md:gap-2">
-            <span className={`w-2 h-2 rounded-full ${isGlitching ? 'bg-[var(--color-brand-secondary)] animate-ping' : 'bg-[var(--color-brand-primary)] animate-pulse'}`} />
-            <span>SIGNAL: {glitchText}</span>
-          </div>
-          <span className="text-[var(--color-brand-text)] opacity-40 text-[8px] mt-1.5">
-            {isGlitching ? 'SYS_CORRUPT_RETRYING...' : 'SYS_STATUS: ONLINE'}
-          </span>
-        </div>
 
         {/* Title */}
         <div className="text-center mb-4 z-10 flex flex-col items-center">

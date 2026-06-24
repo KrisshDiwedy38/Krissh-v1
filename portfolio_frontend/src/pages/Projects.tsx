@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import PageTransition from '../components/layout/PageTransition';
-import TopNavStrip from '../components/layout/TopNavStrip';
 import api from '../api';
 
 interface Project {
@@ -29,12 +28,7 @@ export default function Projects() {
 
   return (
     <PageTransition>
-      <TopNavStrip />
-
-
-
-      {/* Moon Grid */}
-      <main className="max-w-7xl mx-auto px-8 py-20">
+      <main className="flex-grow pt-8 pb-8 px-4 md:px-8 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-16 justify-items-center">
           {projects.map((project, i) => (
             <div key={project.id} className="group cursor-pointer flex flex-col items-center" onClick={() => setSelectedProject(project)}>

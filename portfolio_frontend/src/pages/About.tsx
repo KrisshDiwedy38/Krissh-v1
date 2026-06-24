@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/layout/PageTransition';
-import TopNavStrip from '../components/layout/TopNavStrip';
 import api from '../api';
 
 interface AboutData {
@@ -28,7 +27,6 @@ export default function About() {
 
   return (
     <PageTransition>
-      <TopNavStrip />
       <main className="flex-grow pt-8 pb-8 px-4 md:px-8 max-w-7xl mx-auto w-full">
         {/* Header */}
         <header className="mb-6 text-center">

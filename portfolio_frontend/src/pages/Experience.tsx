@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import PageTransition from '../components/layout/PageTransition';
-import TopNavStrip from '../components/layout/TopNavStrip';
 import api from '../api';
 
 interface Experience {
@@ -31,9 +30,6 @@ export default function Experience() {
 
   return (
     <PageTransition>
-      <TopNavStrip />
-
-
       {/* Timeline */}
       <section className="max-w-7xl mx-auto px-8 py-8 relative">
         <div className="flex flex-col gap-24 relative">

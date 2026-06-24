@@ -7,8 +7,8 @@ export default function Home() {
     <PageTransition>
       <div className="w-full overflow-hidden">
         {/* Hero Section - 2 column grid */}
-        <section className="min-h-[calc(100vh-64px)] max-w-7xl mx-auto px-8 flex items-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center w-full">
+        <section className="min-h-[calc(100vh-64px)] max-w-7xl mx-auto px-4 md:px-8 pt-24 pb-12 flex items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-center w-full">
             {/* Left: ASCII Portrait */}
             <div className="hidden md:flex md:justify-start">
               <ASCIIHero />
