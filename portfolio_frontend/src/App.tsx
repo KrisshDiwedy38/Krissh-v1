@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { AnimatePresence } from 'framer-motion';
 import { TransitionProvider, useTransitionContext } from './context/TransitionContext';
 import TransitionOverlay from './components/layout/TransitionOverlay';
+import TopNavStrip from './components/layout/TopNavStrip';
 
 // Layouts
 import Footer from './components/layout/Footer';
@@ -30,11 +31,11 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 function AuthCluster() {
-    const { isAuthenticated, logout } = useAuth();
+    const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
     return (
-        <div className="fixed bottom-4 md:bottom-auto md:top-4 right-4 z-50 flex gap-3 items-center">
+        <div className="fixed top-4 right-4 z-50 flex gap-3 items-center">
             {isAuthenticated ? (
                 <>
                     <button
@@ -42,12 +43,6 @@ function AuthCluster() {
                         className="min-h-[44px] flex items-center justify-center bg-white text-black px-4 py-2 border-[3px] border-black font-pixel uppercase text-[10px] sm:text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer"
                     >
                         Admin
-                    </button>
-                    <button
-                        onClick={logout}
-                        className="min-h-[44px] flex items-center justify-center bg-[var(--color-brand-primary)] text-black px-4 py-2 border-[3px] border-black font-pixel uppercase text-[10px] sm:text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer"
-                    >
-                        Logout
                     </button>
                 </>
             ) : (
@@ -94,7 +89,7 @@ function HomeButton() {
     return (
         <button
             onClick={handleClick}
-            className="fixed bottom-4 md:bottom-auto md:top-4 left-4 z-50 min-h-[44px] flex items-center justify-center bg-white text-black px-4 py-2 border-[3px] border-black font-pixel uppercase text-[10px] sm:text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer"
+            className="fixed top-4 left-4 z-50 min-h-[44px] flex items-center justify-center bg-white text-black px-4 py-2 border-[3px] border-black font-pixel uppercase text-[10px] sm:text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer"
         >
             Home
         </button>
@@ -109,6 +104,13 @@ function ScrollToTop() {
     }, [pathname]);
 
     return null;
+}
+
+function GlobalTopNav() {
+    const location = useLocation();
+    const portfolioPaths = ['/about', '/skills', '/experience', '/projects', '/contact'];
+    if (!portfolioPaths.includes(location.pathname)) return null;
+    return <TopNavStrip />;
 }
 
 function AnimatedRoutes() {
@@ -146,7 +148,8 @@ function App() {
                         <HomeButton />
                         <AuthCluster />
                         <TransitionOverlay />
-                        <main className="flex-grow">
+                        <GlobalTopNav />
+                        <main className="flex-grow pt-8 relative z-0">
                             <AnimatedRoutes />
                         </main>
                         <Footer />

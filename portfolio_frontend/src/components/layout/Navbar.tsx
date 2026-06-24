@@ -47,20 +47,12 @@ export default function Navbar() {
         {/* Right: Auth Actions */}
         <div className="flex gap-4 items-center">
           {isAuthenticated ? (
-            <>
-              <button
-                onClick={() => navigate('/admin')}
-                className="font-sans font-bold text-[var(--color-brand-primary)] hover:text-[var(--color-brand-secondary)] uppercase text-sm tracking-widest"
-              >
-                Admin
-              </button>
-              <button
-                onClick={logout}
-                className="bg-[var(--color-brand-primary)] text-black px-6 py-2 border-[3px] border-black font-sans font-bold uppercase text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] hover:shadow-none transition-all"
-              >
-                Logout
-              </button>
-            </>
+            <button
+              onClick={() => navigate('/admin')}
+              className="bg-[var(--color-brand-primary)] text-black px-6 py-2 border-[3px] border-black font-sans font-bold uppercase text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] hover:shadow-none transition-all"
+            >
+              Admin
+            </button>
           ) : (
             <button
               onClick={() => navigate('/admin')}

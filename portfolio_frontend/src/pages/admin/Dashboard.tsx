@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
+import { useAuth } from '../../context/AuthContext';
 
 import PageTransition from '../../components/layout/PageTransition';
 import Button from '../../components/ui/Button';
@@ -13,14 +14,22 @@ import SkillsTab from './SkillsTab';
 export default function Dashboard() {
     const [activeTab, setActiveTab] = useState<'about' | 'skills' | 'projects' | 'experience'>('about');
     const navigate = useNavigate();
+    const { logout } = useAuth();
 
     return (
-        <PageTransition className="p-6 md:p-12 max-w-[1440px] mx-auto w-full">
+        <PageTransition className="px-4 py-6 pt-24 md:px-12 md:py-12 md:pt-24 max-w-[1440px] mx-auto w-full flex-col gap-4">
             <header className="flex justify-between items-center mb-12 border-b-[3px] border-[var(--color-brand-border-muted)] pb-6">
                 <div>
                   <h1 className="font-pixel text-2xl md:text-4xl text-[var(--color-brand-primary)]">ADMIN PANEL</h1>
                   <p className="font-sans text-sm tracking-widest uppercase mt-2 opacity-80">Command Center</p>
                 </div>
+                <Button 
+                    variant="secondary"
+                    onClick={logout}
+                    className="!border-red-500 !text-red-500 hover:!bg-red-500 hover:!text-black text-xs md:text-sm !py-2"
+                >
+                    LOGOUT
+                </Button>
             </header>
 
             <div className="flex gap-4 mb-8 flex-wrap">
