@@ -136,10 +136,9 @@ export default function TopNavStrip() {
           initial={leftInitial}
           animate={{ opacity: 0.65, x: '-40%', scale: 1 }}
           exit={transitionDirection === 'right' ? { opacity: 0, x: '-100%', scale: 0.8 } : undefined}
-          whileHover={{ opacity: 1, scale: 1.1, x: '-30%' }}
+          whileHover={{ opacity: 1, scale: 1.08, x: '-30%' }}
           transition={flankingTransition}
           className="group relative flex flex-col items-center cursor-pointer bg-transparent border-0 outline-none pointer-events-auto"
-          style={{ clipPath: 'inset(-20% -20% -40% 40%)' }}
           aria-label={`Go to ${prevPlanet.label}`}
         >
           <motion.div
@@ -147,7 +146,7 @@ export default function TopNavStrip() {
           >
             <img src={prevPlanet.icon} alt="" className="w-full h-full object-contain" />
           </motion.div>
-          <span className="absolute -bottom-8 left-[70%] -translate-x-1/2 font-pixel text-[8px] md:text-[10px] text-[var(--color-brand-primary)] opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 px-2 py-1 rounded border border-[var(--color-brand-primary)] whitespace-nowrap z-50">
+          <span className="absolute top-1/2 -translate-y-1/2 left-[100%] ml-4 font-pixel text-[8px] md:text-[10px] text-[var(--color-brand-primary)] opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 px-2 py-1 rounded border border-[var(--color-brand-primary)] whitespace-nowrap z-50">
             {prevPlanet.label}
           </span>
         </motion.button>
@@ -167,7 +166,7 @@ export default function TopNavStrip() {
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.4 }}
-                  className="w-full h-full"
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex items-center justify-center"
                 >
                   <img 
                     src={currentPlanet.icon} 
@@ -199,10 +198,9 @@ export default function TopNavStrip() {
           initial={rightInitial}
           animate={{ opacity: 0.65, x: '40%', scale: 1 }}
           exit={transitionDirection === 'left' ? { opacity: 0, x: '100%', scale: 0.8 } : undefined}
-          whileHover={{ opacity: 1, scale: 1.1, x: '30%' }}
+          whileHover={{ opacity: 1, scale: 1.08, x: '30%' }}
           transition={flankingTransition}
           className="group relative flex flex-col items-center cursor-pointer bg-transparent border-0 outline-none pointer-events-auto"
-          style={{ clipPath: 'inset(-20% 40% -40% -20%)' }}
           aria-label={`Go to ${nextPlanet.label}`}
         >
           <motion.div
@@ -210,7 +208,7 @@ export default function TopNavStrip() {
           >
             <img src={nextPlanet.icon} alt="" className="w-full h-full object-contain" />
           </motion.div>
-          <span className="absolute -bottom-8 left-[30%] -translate-x-1/2 font-pixel text-[8px] md:text-[10px] text-[var(--color-brand-primary)] opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 px-2 py-1 rounded border border-[var(--color-brand-primary)] whitespace-nowrap z-50">
+          <span className="absolute top-1/2 -translate-y-1/2 right-[100%] left-auto mr-4 font-pixel text-[8px] md:text-[10px] text-[var(--color-brand-primary)] opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 px-2 py-1 rounded border border-[var(--color-brand-primary)] whitespace-nowrap z-50">
             {nextPlanet.label}
           </span>
         </motion.button>

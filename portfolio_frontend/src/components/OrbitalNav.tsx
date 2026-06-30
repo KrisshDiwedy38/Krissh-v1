@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { getOrbitalPosition, getOrbitPathParams, type OrbitParams } from '../utils/orbitalPhysics';
 import { useTransitionContext } from '../context/TransitionContext';
 
@@ -18,7 +19,7 @@ const PLANETS: PlanetConfig[] = [
     label: 'SKILLS',
     path: '/skills',
     size: 60,
-    orbitParams: { a: 225, e: 0.15, period: 8, initialM: 0 }
+    orbitParams: { a: 225, e: 0.15, period: 12, initialM: 0 }
   },
   {
     id: 'earth',
@@ -56,6 +57,7 @@ export default function OrbitalNav() {
     setArrivingState
   } = useTransitionContext();
   const requestRef = useRef<number>(0);
+  const location = useLocation();
 
   // Refs to the actual DOM elements for high-performance direct mutation
   const planetRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -95,7 +97,7 @@ export default function OrbitalNav() {
             const planetConfig = PLANETS.find(p => p.id === planetId);
             size = planetConfig ? (activeBtn === btnDesktop ? planetConfig.size : 80) : 80;
           }
-          
+
           registerDestination({
             x: rect.left + rect.width / 2,
             y: rect.top + rect.height / 2,
@@ -128,13 +130,13 @@ export default function OrbitalNav() {
     <>
       {/* --- DESKTOP ORBITAL VIEW --- */}
       <div
-        className="hidden md:flex relative w-full items-center justify-center transition-all duration-1000 ease-in-out h-[460px] lg:h-[580px] xl:h-[700px] 2xl:h-[850px] scale-100 opacity-100 blur-0"
-        style={{ perspective: '1000px' }}
+        className="hidden md:flex relative w-full items-center justify-center transition-all duration-1000 ease-in-out opacity-100 blur-0"
+        style={{ perspective: '1000px', height: 'min(850px, max(460px, 80vw))' }}
       >
-        <div className="relative w-full h-full flex items-center justify-center md:scale-[0.5] lg:scale-[0.65] xl:scale-[0.8] 2xl:scale-100 transition-transform duration-500">
+        <div className="relative w-full h-full flex items-center justify-center transition-transform duration-500" style={{ transform: 'scale(min(1, calc(100vw / 1100)))' }}>
           <div className="relative w-full h-full flex items-center justify-center" style={{ transformStyle: 'preserve-3d', transform: 'rotateX(75deg)' }}>
-            
-            <svg className="absolute overflow-visible w-0 h-0" style={{ zIndex: 0 }}>
+
+            <svg className="absolute overflow-visible w-0 h-0 pointer-events-none" style={{ zIndex: 0 }}>
               {PLANETS.map(planet => {
                 const { a, b, c } = getOrbitPathParams(planet.orbitParams);
                 return (
@@ -174,7 +176,7 @@ export default function OrbitalNav() {
                 aria-label="About Me"
               >
                 <img src="/Sun-removebg-preview.png" alt="The Sun" className="w-full h-full object-contain drop-shadow-[0_0_30px_rgba(254,0,254,0.6)]" />
-                <span className="absolute -bottom-8 font-pixel text-[10px] text-[var(--color-brand-primary)] whitespace-nowrap opacity-80 group-hover:opacity-100 transition-opacity">
+                <span className={`absolute -bottom-8 font-pixel ${location.pathname === '/about' ? 'text-[13px] text-white opacity-100' : 'text-[10px] text-[var(--color-brand-primary)] opacity-80 group-hover:opacity-100'} whitespace-nowrap transition-opacity`}>
                   ABOUT ME
                 </span>
               </button>
@@ -210,7 +212,7 @@ export default function OrbitalNav() {
                     aria-label={planet.label}
                   >
                     <img src={planet.icon} alt={planet.label} className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(0,251,251,0.5)]" />
-                    <span className="absolute -bottom-8 font-pixel text-[8px] text-[var(--color-brand-text)] whitespace-nowrap opacity-60 group-hover:opacity-100 transition-opacity bg-[var(--color-brand-bg)] px-2 py-1 rounded border border-[var(--color-brand-primary)]">
+                    <span className={`absolute -bottom-8 font-pixel ${location.pathname === planet.path ? 'text-[10.4px] opacity-100 font-bold text-white' : 'text-[8px] opacity-60 group-hover:opacity-100'} text-[var(--color-brand-text)] whitespace-nowrap transition-opacity bg-[var(--color-brand-bg)] px-2 py-1 rounded border border-[var(--color-brand-primary)]`}>
                       {planet.label}
                     </span>
                   </button>
@@ -224,7 +226,7 @@ export default function OrbitalNav() {
       {/* --- MOBILE VERTICAL LIST FALLBACK --- */}
       <div className="flex md:hidden flex-col items-center justify-center gap-12 py-12 relative w-full mt-10">
         <div className="absolute top-12 bottom-12 left-1/2 -translate-x-1/2 border-l-2 border-dotted border-[var(--color-brand-border-muted)] z-0" />
-        
+
         {/* Sun */}
         <button
           id="sun-btn-mobile"
@@ -236,7 +238,7 @@ export default function OrbitalNav() {
           }}
         >
           <img src="/Sun-removebg-preview.png" className="w-[120px] h-[120px] object-contain drop-shadow-[0_0_30px_rgba(254,0,254,0.6)] group-hover:scale-105 transition-transform motion-reduce:transition-none" />
-          <span className="font-pixel text-[12px] text-[var(--color-brand-primary)] bg-[var(--color-brand-bg)] px-2 py-1">ABOUT ME</span>
+          <span className={`font-pixel ${location.pathname === '/about' ? 'text-[15.6px] text-white border-2' : 'text-[12px] text-[var(--color-brand-primary)]'} bg-[var(--color-brand-bg)] px-2 py-1`}>ABOUT ME</span>
         </button>
 
         {/* Planets */}
@@ -254,7 +256,7 @@ export default function OrbitalNav() {
               }}
             >
               <img src={planet.icon} className="w-[80px] h-[80px] object-contain drop-shadow-[0_0_15px_rgba(0,251,251,0.5)] group-hover:scale-105 transition-transform motion-reduce:transition-none" />
-              <span className="font-pixel text-[10px] text-[var(--color-brand-text)] bg-[var(--color-brand-bg)] px-2 py-1 rounded border border-[var(--color-brand-primary)]">
+              <span className={`font-pixel ${location.pathname === planet.path ? 'text-[13px] opacity-100 text-white font-bold' : 'text-[10px]'} text-[var(--color-brand-text)] bg-[var(--color-brand-bg)] px-2 py-1 rounded border border-[var(--color-brand-primary)]`}>
                 {planet.label}
               </span>
             </button>
