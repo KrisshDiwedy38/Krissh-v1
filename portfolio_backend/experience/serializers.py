@@ -3,12 +3,13 @@ from .models import Experience
 from core.serializers import BaseModelSerializer
 
 class ExperienceSerializer(BaseModelSerializer):
-    class Meta(BaseModelSerializer.Meta):
+    class Meta:
         model = Experience
-        fields = BaseModelSerializer.Meta.read_only_fields + [
-            'company', 'role', 'location', 'employment_type', 'description', 'start_date', 'end_date',
-            'logo', 'status', 'order'
+        fields = [
+            'id', 'company', 'role', 'location', 'employment_type', 'description', 'start_date', 'end_date',
+            'logo', 'status', 'order', 'created_at', 'updated_at'
         ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
 class AdminExperienceSerializer(ExperienceSerializer):
     """
