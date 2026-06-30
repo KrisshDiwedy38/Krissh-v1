@@ -42,7 +42,7 @@ export default function ExperienceForm() {
                     order: data.order,
                 });
                 if (!data.end_date) setIsPresent(true);
-            }).catch(err => console.error(err));
+            }).catch(() => {});
         }
     }, [id, isEdit]);
 
@@ -76,7 +76,7 @@ export default function ExperienceForm() {
     };
 
     return (
-        <PageTransition className="p-6 md:p-12 w-full max-w-3xl mx-auto">
+        <PageTransition className="px-4 py-6 pt-24 md:p-12 md:pt-24 w-full max-w-3xl mx-auto">
             <h1 className="font-pixel text-2xl md:text-3xl text-[var(--color-brand-primary)] mb-8">
                 {isEdit ? 'EDIT EXPERIENCE' : 'NEW EXPERIENCE'}
             </h1>
@@ -146,9 +146,9 @@ export default function ExperienceForm() {
                         />
                     </div>
                     
-                    <div className="pt-6 flex justify-end gap-4 border-t-[3px] border-[var(--color-brand-border-muted)]">
-                        <Button type="button" variant="secondary" onClick={() => navigate('/admin')}>Cancel</Button>
-                        <Button type="submit">Save</Button>
+                    <div className="pt-6 flex justify-end gap-2 md:gap-4 border-t-[3px] border-[var(--color-brand-border-muted)]">
+                        <Button type="button" variant="secondary" onClick={() => navigate('/admin')} className="flex-1 md:flex-none text-center">Cancel</Button>
+                        <Button type="submit" className="flex-1 md:flex-none text-center">Save</Button>
                     </div>
                 </form>
             </Card>
