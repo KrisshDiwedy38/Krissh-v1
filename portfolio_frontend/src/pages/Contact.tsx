@@ -17,7 +17,7 @@ const SATELLITES: SatelliteConfig[] = [
     id: 'gmail',
     icon: '/Gmail_Logo.png',
     label: 'GMAIL',
-    href: import.meta.env.VITE_GMAIL_URL || '#',
+    href: '#',
     orbitParams: { a: 160, e: 0.2, period: 10, initialM: 0 },
     color: 'var(--color-brand-primary)',
     size: 60,
@@ -26,7 +26,7 @@ const SATELLITES: SatelliteConfig[] = [
     id: 'linkedin',
     icon: '/LinkedIn_Logo.png',
     label: 'LINKEDIN',
-    href: import.meta.env.VITE_LINKEDIN_URL || '#',
+    href: 'https://linkedin.com/in/krisshdiwedy38',
     orbitParams: { a: 220, e: 0.25, period: 16, initialM: Math.PI / 2 },
     color: 'var(--color-brand-secondary)',
     size: 60,
@@ -35,7 +35,7 @@ const SATELLITES: SatelliteConfig[] = [
     id: 'github',
     icon: '/Github_Logo.png',
     label: 'GITHUB',
-    href: import.meta.env.VITE_GITHUB_URL || '#',
+    href: 'https://github.com/KrisshDiwedy38',
     orbitParams: { a: 280, e: 0.3, period: 24, initialM: Math.PI },
     color: 'var(--color-brand-tertiary)',
     size: 60,
@@ -44,7 +44,7 @@ const SATELLITES: SatelliteConfig[] = [
     id: 'twitter',
     icon: '/X_Logo.png',
     label: 'X / TWITTER',
-    href: import.meta.env.VITE_TWITTER_URL || '#',
+    href: 'https://x.com/KDiwedy',
     orbitParams: { a: 300, e: 0.3, period: 34, initialM: Math.PI * 1.5 },
     color: 'var(--color-brand-primary-tint)',
     size: 60,
@@ -54,10 +54,17 @@ const SATELLITES: SatelliteConfig[] = [
 export default function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState('');
+  const [toastVisible, setToastVisible] = useState(false);
 
-  const [signalStrength, setSignalStrength] = useState(92);
-  const [isGlitching, setIsGlitching] = useState(false);
-  const [glitchText, setGlitchText] = useState('92%');
+  const handleSatelliteClick = (e: React.MouseEvent, satId: string) => {
+    if (satId === 'gmail') {
+      e.preventDefault();
+      const email = 'krisshdiwedy38@gmail.com';
+      if (email) navigator.clipboard.writeText(email);
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 3000);
+    }
+  };
 
   const requestRef = useRef<number>(0);
   const satelliteRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -78,16 +85,7 @@ export default function Contact() {
     return () => cancelAnimationFrame(requestRef.current);
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSignalStrength(prev => {
-        const change = Math.floor(Math.random() * 5) - 2;
-        return Math.min(100, Math.max(75, prev + change));
-      });
-    }, 2500);
 
-    return () => clearInterval(interval);
-  }, []);
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -104,11 +102,11 @@ export default function Contact() {
         setFormData({ name: '', email: '', message: '' });
       } else {
         const errorData = await res.json();
-        console.error('API Error:', errorData);
+        // error silenced
         setStatus('SIGNAL LOST — TRY AGAIN');
       }
     } catch (error) {
-      console.error('Fetch Error:', error);
+      // error silenced
       setStatus('SIGNAL LOST — TRY AGAIN');
     }
   };
@@ -132,7 +130,7 @@ export default function Contact() {
 
             {/* SVG for Orbit Paths */}
             <svg
-              className="absolute overflow-visible"
+              className="absolute overflow-visible pointer-events-none"
               style={{
                 zIndex: 0,
                 left: '50%',
@@ -162,7 +160,7 @@ export default function Contact() {
 
             {/* Central Earth Node */}
             <div
-              className="absolute z-10 flex flex-col items-center justify-center"
+              className="absolute z-10 flex flex-col items-center justify-center pointer-events-none"
               style={{
                 left: '50%',
                 top: '50%',
@@ -193,6 +191,7 @@ export default function Contact() {
                 >
                   <a
                     href={sat.href}
+                    onClick={(e) => handleSatelliteClick(e, sat.id)}
                     className="group absolute flex flex-col items-center transition-transform duration-300"
                     style={{
                       width: `${sat.size}px`,
@@ -239,6 +238,7 @@ export default function Contact() {
             <a
               key={`mobile-${sat.id}`}
               href={sat.href}
+              onClick={(e) => handleSatelliteClick(e, sat.id)}
               className="relative z-10 flex flex-col items-center gap-2 group cursor-pointer min-w-[44px] min-h-[44px]"
             >
               <span
@@ -287,6 +287,13 @@ export default function Contact() {
             </form>
           </div>
         </section>
+        
+        {/* Toast Notification */}
+        {toastVisible && (
+          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-[var(--color-brand-primary)] text-black px-6 py-3 border-[3px] border-black shadow-[6px_6px_0px_0px_var(--color-brand-secondary)] font-pixel text-xs animate-float">
+            GMAIL ID COPIED!
+          </div>
+        )}
       </main>
     </PageTransition>
   );
