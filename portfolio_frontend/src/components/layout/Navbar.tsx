@@ -12,7 +12,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 

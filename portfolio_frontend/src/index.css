@@ -25,6 +25,7 @@
   --color-brand-on-error: #ffdad6;
 
   --font-pixel: "Press Start 2P", monospace;
+  --font-pixel-body: "VT323", monospace;
   --font-sans: "Space Grotesk", sans-serif;
 }
 
@@ -39,9 +40,33 @@
     box-sizing: border-box;
   }
 
+  html {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+
   body {
     @apply bg-[var(--color-brand-bg)] text-[var(--color-brand-text)] antialiased;
     font-family: var(--font-sans);
+    --page-margin: 16px;
+    padding-inline: var(--page-margin);
+    box-sizing: border-box;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  @media (min-width: 768px) {
+    body {
+      --page-margin: 24px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    body {
+      --page-margin: 0;
+    }
   }
 
   /* Fluid Typography for Mobile Scaling */
@@ -177,6 +202,34 @@
   /* Neobrutal Shadows */
   .neobrutal-shadow-primary { box-shadow: 6px 6px 0px 0px #00fbfb; }
   .neobrutal-shadow-secondary { box-shadow: 6px 6px 0px 0px #ffabf3; }
+
+  /* Glitch Hover Effect */
+  .glitch-hover {
+    position: relative;
+    transition: text-shadow 0.15s ease-in-out, color 0.15s ease-in-out;
+    outline: none;
+  }
+  
+  @media (prefers-reduced-motion: no-preference) {
+    .glitch-hover:hover {
+      text-shadow: 2px 0 var(--color-brand-primary), -2px 0 var(--color-brand-secondary);
+      color: white;
+    }
+    .glitch-hover:focus-visible {
+      text-decoration: underline;
+      text-decoration-color: var(--color-brand-primary);
+      text-decoration-thickness: 2px;
+      text-shadow: none;
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .glitch-hover:hover, .glitch-hover:focus-visible {
+      text-decoration: underline;
+      text-decoration-color: var(--color-brand-primary);
+      text-decoration-thickness: 2px;
+    }
+  }
 }
 
 /* Animations */
