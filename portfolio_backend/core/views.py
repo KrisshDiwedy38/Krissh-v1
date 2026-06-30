@@ -9,6 +9,21 @@ from django.core.files.storage import default_storage
 from rest_framework import viewsets
 from .models import AboutMe, SkillCategory, Skill
 from .serializers import AboutMeSerializer, SkillCategorySerializer, SkillSerializer
+from rest_framework.decorators import action
+from rest_framework import status as drf_status
+
+class StatusToggleMixin:
+    @action(detail=True, methods=['patch'], url_path='status')
+    def toggle_status(self, request, pk=None):
+        obj = self.get_object()
+        new_status = request.data.get('status')
+        model_class = self.get_queryset().model
+        if new_status not in [choice[0] for choice in model_class.STATUS_CHOICES]:
+            return Response({"error": "Invalid status value."}, status=drf_status.HTTP_400_BAD_REQUEST)
+        
+        obj.status = new_status
+        obj.save()
+        return Response({'status': obj.status})
 
 class AboutMePublicView(APIView):
     permission_classes = [AllowAny]
@@ -36,7 +51,7 @@ class AboutMeAdminView(APIView):
         return Response(serializer.errors, status=400)
 
 class SkillCategoryPublicViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = SkillCategory.objects.all()
+    queryset = SkillCategory.objects.prefetch_related('skills')
     serializer_class = SkillCategorySerializer
     permission_classes = [AllowAny]
 
@@ -95,9 +110,22 @@ class ContactView(APIView):
         if not all([name, email, message]):
             return Response({"error": "Name, email, and message are required."}, status=400)
 
+        from django.core.validators import validate_email
+        from django.core.exceptions import ValidationError
+        from django.utils.html import escape
+
+        try:
+            validate_email(email)
+        except ValidationError:
+            return Response({"error": "Invalid email format."}, status=400)
+
+        name = escape(name)
+        email = escape(email)
+        message = escape(message)
+
         from decouple import config
-        resend.api_key = config('VITE_RESEND_API_KEY', default='')
-        receiver_email = config('VITE_RECEIVER_EMAIL', default='')
+        resend.api_key = config('RESEND_API_KEY', default='')
+        receiver_email = config('RECEIVER_EMAIL', default='')
 
         if not resend.api_key or not receiver_email:
             return Response({"error": "Server configuration error."}, status=500)

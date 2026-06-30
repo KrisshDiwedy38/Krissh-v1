@@ -17,9 +17,7 @@ class AboutMe(models.Model):
         return "About Me Configuration"
 
     def save(self, *args, **kwargs):
-        # Enforce singleton
-        if AboutMe.objects.exists() and not self.pk:
-            self.pk = AboutMe.objects.first().pk
+        self.pk = 1
         super(AboutMe, self).save(*args, **kwargs)
 
 class SkillCategory(models.Model):

@@ -6,9 +6,13 @@ class BaseModelSerializer(serializers.ModelSerializer):
     A base model serializer that sets default read_only_fields.
     """
     class Meta:
-        read_only_fields = ['id', 'slug', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
-class AboutMeSerializer(serializers.ModelSerializer):
+class SluggedModelSerializer(BaseModelSerializer):
+    class Meta(BaseModelSerializer.Meta):
+        read_only_fields = BaseModelSerializer.Meta.read_only_fields + ['slug']
+
+class AboutMeSerializer(BaseModelSerializer):
     class Meta:
         model = AboutMe
         fields = ['id', 'bio', 'profile_image', 'resume', 'title', 'core_skill', 'weapon', 'base']
