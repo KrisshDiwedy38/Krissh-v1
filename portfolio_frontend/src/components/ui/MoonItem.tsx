@@ -9,14 +9,15 @@ interface MoonItemProps {
   subtitle?: string;
   previewImage?: string | null;
   children: React.ReactNode;
+  isExpanded?: boolean;
+  onToggle?: () => void;
 }
 
-export default function MoonItem({ title, subtitle, previewImage, children }: MoonItemProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+export default function MoonItem({ title, subtitle, previewImage, children, isExpanded, onToggle }: MoonItemProps) {
 
   return (
-    <div className="relative w-full lg:w-[30%] max-w-4xl mx-auto my-6 lg:my-12 flex flex-col items-center">
-      
+    <div className="relative w-full mx-auto my-6 lg:my-12 flex flex-col items-center">
+
       {/* The Moon Button */}
       <AnimatePresence>
         {!isExpanded && (
@@ -25,8 +26,8 @@ export default function MoonItem({ title, subtitle, previewImage, children }: Mo
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.5, opacity: 0 }}
             whileHover={{ scale: 1.1 }}
-            className="cursor-pointer flex flex-col items-center gap-4 z-10"
-            onClick={() => setIsExpanded(true)}
+            className="cursor-pointer flex flex-col items-center gap-4 z-10 w-full"
+            onClick={onToggle}
           >
             <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-[4px] border-white bg-[var(--color-brand-surface-2)] shadow-[8px_8px_0px_0px_var(--color-brand-border-muted)] flex items-center justify-center overflow-hidden relative">
               {previewImage ? (
@@ -62,12 +63,14 @@ export default function MoonItem({ title, subtitle, previewImage, children }: Mo
                   <h3 className="font-pixel text-xl text-[var(--color-brand-primary)] mb-2">{title}</h3>
                   {subtitle && <p className="font-sans text-sm text-[var(--color-brand-text)] opacity-80 uppercase tracking-widest">{subtitle}</p>}
                 </div>
-                <Button variant="secondary" onClick={() => setIsExpanded(false)} className="!px-3 !py-2 md:!py-1 !text-xs min-h-[44px] md:min-h-0 flex items-center justify-center">
-                  CLOSE
-                </Button>
               </div>
               <div className="w-full border-t-[2px] border-[var(--color-brand-border-muted)] pt-6">
                 {children}
+              </div>
+              <div className="mt-8 flex justify-center border-t-[2px] border-[var(--color-brand-border-muted)] pt-6">
+                <Button variant="secondary" onClick={onToggle} className="!px-6 !py-2 min-h-[44px] flex items-center justify-center font-pixel">
+                  X
+                </Button>
               </div>
             </Card>
           </motion.div>
