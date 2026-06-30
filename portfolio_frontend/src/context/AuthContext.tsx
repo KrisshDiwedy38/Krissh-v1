@@ -3,18 +3,21 @@ import api, { setAccessToken } from '../api';
 
 interface AuthContextType {
     isAuthenticated: boolean;
+    isLoading: boolean;
     login: (access: string) => void;
     logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
     isAuthenticated: false,
+    isLoading: true,
     login: () => {},
     logout: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     // Initial check to see if we can refresh and get an access token silently
     useEffect(() => {
@@ -28,6 +31,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             } catch (e) {
                 // Not authenticated or refresh token missing/expired
                 setIsAuthenticated(false);
+            } finally {
+                setIsLoading(false);
             }
         };
         silentRefresh();
@@ -46,7 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
             await api.post('/auth/logout/');
         } catch (e) {
-            console.error('Logout failed', e);
+            // error silenced
         } finally {
             setAccessToken('');
             setIsAuthenticated(false);
@@ -54,7 +59,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, isLoading, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

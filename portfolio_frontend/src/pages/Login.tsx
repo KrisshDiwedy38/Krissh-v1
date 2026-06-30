@@ -32,8 +32,8 @@ export default function Login() {
     };
 
     return (
-        <PageTransition className="flex items-center justify-center min-h-[calc(100vh-200px)] px-6">
-            <Card className="w-full max-w-md relative !border-[4px] !p-8 shadow-[12px_12px_0px_0px_var(--color-brand-primary)]">
+        <PageTransition className="flex items-center justify-center min-h-[100dvh]">
+            <Card className="w-[calc(100%-32px)] max-w-[400px] md:max-w-[440px] lg:max-w-[480px] mx-auto relative !border-[4px] p-6 lg:p-10 shadow-[12px_12px_0px_0px_var(--color-brand-primary)]">
                 
                 <button 
                     onClick={() => navigate('/')}
@@ -68,7 +68,7 @@ export default function Login() {
                     <Button
                         type="submit"
                         disabled={loading}
-                        className="mt-4"
+                        className="mt-4 w-full min-h-[48px] overflow-hidden text-ellipsis whitespace-nowrap flex items-center justify-center"
                     >
                         {loading ? 'AUTHENTICATING...' : 'ENTER DASHBOARD'}
                     </Button>
