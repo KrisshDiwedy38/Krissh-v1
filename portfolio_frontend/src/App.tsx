@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AnimatePresence } from 'framer-motion';
@@ -9,49 +9,55 @@ import TopNavStrip from './components/layout/TopNavStrip';
 // Layouts
 import Footer from './components/layout/Footer';
 import Starfield from './components/layout/Starfield';
+import Button from './components/ui/Button';
 
 // Pages
-import Home from './pages/Home';
-import Projects from './pages/Projects';
-import Experience from './pages/Experience';
-import Skills from './pages/Skills';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import Login from './pages/Login';
+const Home = lazy(() => import('./pages/Home'));
+const Projects = lazy(() => import('./pages/Projects'));
+const Experience = lazy(() => import('./pages/Experience'));
+const Skills = lazy(() => import('./pages/Skills'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Login = lazy(() => import('./pages/Login'));
 
 // Admin
-import Dashboard from './pages/admin/Dashboard';
-import ProjectForm from './pages/admin/ProjectForm';
-import ExperienceForm from './pages/admin/ExperienceForm';
+const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
+const ProjectForm = lazy(() => import('./pages/admin/ProjectForm'));
+const ExperienceForm = lazy(() => import('./pages/admin/ExperienceForm'));
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, isLoading } = useAuth();
+    if (isLoading) return <div className="text-white text-center p-8 font-pixel">LOADING AUTHORIZATION...</div>;
     if (!isAuthenticated) return <Navigate to="/login" />;
     return <>{children}</>;
 };
 
 function AuthCluster() {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, isLoading } = useAuth();
     const navigate = useNavigate();
+
+    if (isLoading) return null;
 
     return (
         <div className="fixed top-4 right-4 z-50 flex gap-3 items-center">
             {isAuthenticated ? (
                 <>
-                    <button
+                    <Button
                         onClick={() => navigate('/admin')}
-                        className="min-h-[44px] flex items-center justify-center bg-white text-black px-4 py-2 border-[3px] border-black font-pixel uppercase text-[10px] sm:text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer"
+                        variant="nav"
+                        className="bg-white text-black"
                     >
                         Admin
-                    </button>
+                    </Button>
                 </>
             ) : (
-                <button
+                <Button
                     onClick={() => navigate('/admin')}
-                    className="min-h-[44px] flex items-center justify-center bg-[var(--color-brand-primary)] text-black px-4 py-2 border-[3px] border-black font-pixel uppercase text-[10px] sm:text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer"
+                    variant="nav"
+                    className="bg-[var(--color-brand-primary)] text-black"
                 >
                     Login
-                </button>
+                </Button>
             )}
         </div>
     );
@@ -87,12 +93,13 @@ function HomeButton() {
     };
 
     return (
-        <button
+        <Button
             onClick={handleClick}
-            className="fixed top-4 left-4 z-50 min-h-[44px] flex items-center justify-center bg-white text-black px-4 py-2 border-[3px] border-black font-pixel uppercase text-[10px] sm:text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer"
+            variant="nav"
+            className="fixed top-4 left-4 z-50 bg-white text-black"
         >
             Home
-        </button>
+        </Button>
     );
 }
 
@@ -113,26 +120,32 @@ function GlobalTopNav() {
     return <TopNavStrip />;
 }
 
+function GlobalStarfield() {
+    return <Starfield />;
+}
+
 function AnimatedRoutes() {
     const location = useLocation();
 
     return (
         <AnimatePresence mode="popLayout">
-            <Routes location={location} key={location.pathname}>
-                <Route path="/" element={<Home />} />
-                <Route path="/projects" element={<Projects />} />
-                <Route path="/experience" element={<Experience />} />
-                <Route path="/skills" element={<Skills />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/login" element={<Login />} />
-                
-                <Route path="/admin" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-                <Route path="/admin/projects/new" element={<PrivateRoute><ProjectForm /></PrivateRoute>} />
-                <Route path="/admin/projects/:id/edit" element={<PrivateRoute><ProjectForm /></PrivateRoute>} />
-                <Route path="/admin/experience/new" element={<PrivateRoute><ExperienceForm /></PrivateRoute>} />
-                <Route path="/admin/experience/:id/edit" element={<PrivateRoute><ExperienceForm /></PrivateRoute>} />
-            </Routes>
+            <Suspense fallback={<div className="text-white text-center p-8 font-pixel h-screen flex items-center justify-center">LOADING SECURE CHANNEL...</div>}>
+                <Routes location={location} key={location.pathname}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/projects" element={<Projects />} />
+                    <Route path="/experience" element={<Experience />} />
+                    <Route path="/skills" element={<Skills />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/login" element={<Login />} />
+                    
+                    <Route path="/admin" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+                    <Route path="/admin/projects/new" element={<PrivateRoute><ProjectForm /></PrivateRoute>} />
+                    <Route path="/admin/projects/:id/edit" element={<PrivateRoute><ProjectForm /></PrivateRoute>} />
+                    <Route path="/admin/experience/new" element={<PrivateRoute><ExperienceForm /></PrivateRoute>} />
+                    <Route path="/admin/experience/:id/edit" element={<PrivateRoute><ExperienceForm /></PrivateRoute>} />
+                </Routes>
+            </Suspense>
         </AnimatePresence>
     );
 }
@@ -144,7 +157,7 @@ function App() {
                 <ScrollToTop />
                 <TransitionProvider>
                     <div className="flex flex-col min-h-screen relative z-0">
-                        <Starfield />
+                        <GlobalStarfield />
                         <HomeButton />
                         <AuthCluster />
                         <TransitionOverlay />
