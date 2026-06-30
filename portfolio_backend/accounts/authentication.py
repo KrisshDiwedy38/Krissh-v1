@@ -9,14 +9,19 @@ class CookieJWTAuthentication(JWTAuthentication):
         if header is not None:
             raw_token = self.get_raw_token(header)
         else:
-            # If not in header, we can optionally check a cookie.
-            # However, for access tokens, we agreed on in-memory storage (sent via Header),
-            # and refresh tokens in httpOnly cookies.
-            # But just in case we need to support cookie-based access token later:
             raw_token = request.COOKIES.get('access_token')
+            if raw_token is not None:
+                self.enforce_csrf(request)
 
         if raw_token is None:
             return None
 
         validated_token = self.get_validated_token(raw_token)
         return self.get_user(validated_token), validated_token
+
+    def enforce_csrf(self, request):
+        check = CSRFCheck(lambda req: None)
+        check.process_request(request)
+        reason = check.process_view(request, None, (), {})
+        if reason:
+            raise exceptions.PermissionDenied(f'CSRF Failed: {reason}')

@@ -19,8 +19,8 @@ class CookieTokenObtainPairView(TokenObtainPairView):
                     value=refresh_token,
                     max_age=settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'].total_seconds(),
                     httponly=True,
-                    samesite='Lax', # adjust to 'None' and secure=True in production with cross-domain
-                    secure=False    # set True in production
+                    samesite='None' if not settings.DEBUG else 'Lax',
+                    secure=not settings.DEBUG
                 )
         return response
 
@@ -46,18 +46,28 @@ class CookieTokenRefreshView(TokenRefreshView):
                     value=new_refresh_token,
                     max_age=settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'].total_seconds(),
                     httponly=True,
-                    samesite='Lax',
-                    secure=False
+                    samesite='None' if not settings.DEBUG else 'Lax',
+                    secure=not settings.DEBUG
                 )
         return response
 
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
+from rest_framework_simplejwt.tokens import RefreshToken
+
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        refresh_token = request.COOKIES.get('refresh_token')
+        if refresh_token:
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+            except Exception:
+                pass
+
         response = Response({"detail": "Successfully logged out."})
         response.delete_cookie('refresh_token')
         return response
