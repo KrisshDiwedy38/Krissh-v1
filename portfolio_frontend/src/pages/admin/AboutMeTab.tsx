@@ -14,6 +14,7 @@ export default function AboutMeTab() {
     const [currentImage, setCurrentImage] = useState('');
     const [currentResume, setCurrentResume] = useState('');
     const [loading, setLoading] = useState(true);
+    const [statusMsg, setStatusMsg] = useState({ text: '', type: '' });
 
     const fetchAbout = async () => {
         try {
@@ -26,7 +27,7 @@ export default function AboutMeTab() {
             setCurrentImage(res.data.profile_image || '');
             setCurrentResume(res.data.resume || '');
         } catch (err) {
-            console.error(err);
+            // error silenced
         } finally {
             setLoading(false);
         }
@@ -51,18 +52,20 @@ export default function AboutMeTab() {
             await api.patch('/admin/about/', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-            alert('Saved successfully!');
+            setStatusMsg({ text: 'SAVED SUCCESSFULLY!', type: 'success' });
+            setTimeout(() => setStatusMsg({ text: '', type: '' }), 3000);
             fetchAbout();
         } catch (err) {
-            console.error(err);
-            alert('Failed to save.');
+            // error silenced
+            setStatusMsg({ text: 'FAILED TO SAVE.', type: 'error' });
+            setTimeout(() => setStatusMsg({ text: '', type: '' }), 3000);
         }
     };
 
     if (loading) return <div>Loading...</div>;
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6 max-w-2xl bg-[var(--color-brand-surface-2)] p-6 border-[3px] border-[var(--color-brand-border)]">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-none w-full bg-[var(--color-brand-surface-2)] p-4 border-[3px] border-[var(--color-brand-border)]">
             <h2 className="font-pixel text-xl text-[var(--color-brand-primary)]">About Me</h2>
             
             <div className="flex flex-col gap-2">
@@ -146,7 +149,14 @@ export default function AboutMeTab() {
                 />
             </div>
 
-            <Button type="submit" variant="primary" className="mt-4 w-fit">SAVE CHANGES</Button>
+            <div className="flex items-center gap-4 mt-4">
+                <Button type="submit" variant="primary" className="w-fit">SAVE CHANGES</Button>
+                {statusMsg.text && (
+                    <span className={`font-pixel text-sm animate-pulse ${statusMsg.type === 'success' ? 'text-[var(--color-brand-primary)]' : 'text-red-500'}`}>
+                        {statusMsg.text}
+                    </span>
+                )}
+            </div>
         </form>
     );
 }

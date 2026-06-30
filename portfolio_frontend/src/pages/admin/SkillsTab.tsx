@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../api';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
+import { Trash2, GripVertical } from 'lucide-react';
 
 interface Skill {
     id: number;
@@ -27,7 +28,7 @@ export default function SkillsTab() {
             const res = await api.get('/admin/skills/categories/');
             setCategories(res.data);
         } catch (err) {
-            console.error(err);
+            // error silenced
         } finally {
             setLoading(false);
         }
@@ -45,7 +46,7 @@ export default function SkillsTab() {
             setNewCategoryTitle('');
             fetchSkills();
         } catch (err) {
-            console.error(err);
+            // error silenced
         }
     };
 
@@ -55,7 +56,7 @@ export default function SkillsTab() {
             await api.delete(`/admin/skills/categories/${id}/`);
             fetchSkills();
         } catch (err) {
-            console.error(err);
+            // error silenced
         }
     };
 
@@ -64,7 +65,7 @@ export default function SkillsTab() {
             await api.patch(`/admin/skills/categories/${id}/`, { [field]: value });
             fetchSkills();
         } catch (err) {
-            console.error(err);
+            // error silenced
         }
     };
 
@@ -79,7 +80,7 @@ export default function SkillsTab() {
             });
             fetchSkills();
         } catch (err) {
-            console.error(err);
+            // error silenced
         }
     };
 
@@ -88,15 +89,44 @@ export default function SkillsTab() {
             await api.delete(`/admin/skills/items/${skillId}/`);
             fetchSkills();
         } catch (err) {
-            console.error(err);
+            // error silenced
         }
+    };
+
+    const handleCategoryDragStart = (e: React.DragEvent, index: number) => {
+        e.dataTransfer.setData('text/plain', index.toString());
+    };
+
+    const handleCategoryDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+    };
+
+    const handleCategoryDrop = async (e: React.DragEvent, dropIndex: number) => {
+        const dragIndex = parseInt(e.dataTransfer.getData('text/plain'));
+        if (dragIndex === dropIndex) return;
+
+        const newCats = [...categories];
+        const [dragged] = newCats.splice(dragIndex, 1);
+        newCats.splice(dropIndex, 0, dragged);
+        setCategories(newCats);
+
+        for (let i = 0; i < newCats.length; i++) {
+            if (newCats[i].order !== i) {
+                try {
+                    await api.patch(`/admin/skills/categories/${newCats[i].id}/`, { order: i });
+                } catch (err) {
+                    // error silenced
+                }
+            }
+        }
+        fetchSkills();
     };
 
     if (loading) return <div>Loading...</div>;
 
     return (
-        <div className="flex flex-col gap-6 w-full max-w-4xl">
-            <Card className="bg-[var(--color-brand-surface-2)] !p-6 flex flex-col md:flex-row gap-4 items-end">
+        <div className="flex flex-col gap-4 w-full">
+            <Card className="bg-[var(--color-brand-surface-2)] !p-4 border-[3px] border-[var(--color-brand-border)] flex flex-col md:flex-row gap-4 items-end">
                 <div className="flex flex-col gap-2 flex-grow w-full">
                     <label className="font-bold text-sm uppercase tracking-widest">New Category Name</label>
                     <span className="text-xs text-gray-400">Add a new collapsible category (e.g., "Frontend").</span>
@@ -111,13 +141,24 @@ export default function SkillsTab() {
                 <Button onClick={handleAddCategory} variant="primary" className="whitespace-nowrap">ADD CATEGORY</Button>
             </Card>
 
-            {categories.map((category) => (
-                <Card key={category.id} className="bg-[var(--color-brand-surface-2)] !p-6 relative">
+            {categories.map((category, i) => (
+                <Card 
+                    key={category.id} 
+                    className="bg-[var(--color-brand-surface-2)] !p-4 border-[3px] border-[var(--color-brand-border)] relative pl-12"
+                    draggable
+                    onDragStart={(e) => handleCategoryDragStart(e, i)}
+                    onDragOver={handleCategoryDragOver}
+                    onDrop={(e) => handleCategoryDrop(e, i)}
+                >
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white cursor-move p-2" aria-label="Drag to reorder">
+                        <GripVertical size={20} />
+                    </div>
                     <button 
                         onClick={() => handleDeleteCategory(category.id)}
-                        className="absolute top-4 right-4 text-red-500 hover:text-red-400 text-sm uppercase font-bold underline"
+                        className="absolute top-4 right-4 text-red-500 hover:text-red-400 p-2"
+                        aria-label="Delete Category"
                     >
-                        Delete Category
+                        <Trash2 size={20} />
                     </button>
                     
                     <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -161,7 +202,9 @@ export default function SkillsTab() {
                             {category.skills.map(skill => (
                                 <div key={skill.id} className="flex items-center gap-2 bg-[var(--color-brand-surface-3)] px-3 py-1 border-[2px] border-[var(--color-brand-border)]">
                                     <span className="font-sans text-sm">{skill.name}</span>
-                                    <button onClick={() => handleDeleteSkill(skill.id)} className="text-[var(--color-brand-error)] hover:text-red-400 font-bold ml-2">×</button>
+                                    <button onClick={() => handleDeleteSkill(skill.id)} className="text-[var(--color-brand-error)] hover:text-red-400 font-bold ml-2">
+                                        <Trash2 size={14} />
+                                    </button>
                                 </div>
                             ))}
                         </div>
