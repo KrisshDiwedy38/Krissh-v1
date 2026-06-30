@@ -1,16 +1,16 @@
 from rest_framework import serializers
 from .models import Project, ProjectImage
-from core.serializers import BaseModelSerializer
+from core.serializers import BaseModelSerializer, SluggedModelSerializer
 
 class ProjectImageSerializer(BaseModelSerializer):
     class Meta(BaseModelSerializer.Meta):
         model = ProjectImage
         fields = BaseModelSerializer.Meta.read_only_fields + ['project', 'image', 'order']
 
-class ProjectListSerializer(BaseModelSerializer):
-    class Meta(BaseModelSerializer.Meta):
+class ProjectListSerializer(SluggedModelSerializer):
+    class Meta(SluggedModelSerializer.Meta):
         model = Project
-        fields = BaseModelSerializer.Meta.read_only_fields + [
+        fields = SluggedModelSerializer.Meta.read_only_fields + [
             'title', 'short_description', 'description', 'tech_stack', 'github_url', 'live_url',
             'thumbnail', 'status', 'category', 'featured', 'order'
         ]

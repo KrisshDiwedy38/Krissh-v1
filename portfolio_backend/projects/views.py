@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Project
 from .serializers import ProjectListSerializer, ProjectDetailSerializer, AdminProjectSerializer
+from core.views import StatusToggleMixin
 
 class PublicProjectViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -14,14 +15,14 @@ class PublicProjectViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = 'slug'
 
     def get_queryset(self):
-        return Project.objects.filter(status='PUBLISHED')
+        return Project.objects.filter(status='PUBLISHED').prefetch_related('images')
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return ProjectDetailSerializer
         return ProjectListSerializer
 
-class AdminProjectViewSet(viewsets.ModelViewSet):
+class AdminProjectViewSet(StatusToggleMixin, viewsets.ModelViewSet):
     """
     Admin API:
     - Requires JWT Authentication (IsAuthenticated)
@@ -30,14 +31,3 @@ class AdminProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     queryset = Project.objects.all()
     serializer_class = AdminProjectSerializer
-
-    @action(detail=True, methods=['patch'], url_path='status')
-    def toggle_status(self, request, pk=None):
-        project = self.get_object()
-        new_status = request.data.get('status')
-        if new_status not in [choice[0] for choice in Project.STATUS_CHOICES]:
-            return Response({"error": "Invalid status value."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        project.status = new_status
-        project.save()
-        return Response({'status': project.status})
