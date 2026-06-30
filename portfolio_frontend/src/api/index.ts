@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
 const api = axios.create({
-    baseURL: 'http://localhost:8000/api',
+    baseURL: API_BASE_URL,
     withCredentials: true, // Important for receiving httpOnly cookies
 });
 
@@ -38,7 +40,7 @@ api.interceptors.response.use(
                 // The refresh token is in the httpOnly cookie, so we don't send anything in the body
                 // Wait, Django REST framework simple jwt requires refresh in body unless custom
                 // Wait, our custom view CookieTokenRefreshView reads it from the cookie.
-                const res = await axios.post('http://localhost:8000/api/auth/token/refresh/', {}, {
+                const res = await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {}, {
                     withCredentials: true
                 });
                 
