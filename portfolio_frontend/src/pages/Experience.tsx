@@ -1,18 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/layout/PageTransition';
-import api from '../api';
+import { useApiData } from '../hooks/useApiData';
+import type { Experience } from '../types';
 
-interface Experience {
-  id: number;
-  company: string;
-  role: string;
-  start_date: string;
-  end_date: string;
-  description: string;
-}
-
-export default function Experience() {
-  const [experiences, setExperiences] = useState<Experience[]>([]);
+export default function ExperiencePage() {
+  const navigate = useNavigate();
+  const { data: experiences, loading, error } = useApiData<Experience[]>('/experience/');
 
   const SHADOW_COLORS = ['#ffabf3', '#00fbfb', '#ffabf3'];
   const BORDER_COLORS = ['var(--color-brand-secondary)', 'var(--color-brand-primary-tint)', 'var(--color-brand-tertiary)'];
@@ -22,18 +15,26 @@ export default function Experience() {
     { bg: 'bg-[var(--color-brand-tertiary)]', text: 'text-black' },
   ];
 
-  useEffect(() => {
-    api.get('/experience/')
-      .then(res => { if (res.data.length) setExperiences(res.data); })
-      .catch(err => console.error('Failed to fetch experience', err));
-  }, []);
+  if (loading) return <div className="text-white text-center p-8 font-pixel h-full flex items-center justify-center">LOADING EXPERIENCE...</div>;
+  if (error) return <div className="text-[#ffabf3] text-center p-8 font-pixel h-full flex items-center justify-center">ERROR: {error}</div>;
+
+  const experienceList = experiences || [];
+
+  const formatDate = (dateStr: string) => {
+    if (!dateStr || dateStr.toLowerCase() === 'present') return dateStr;
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    const month = date.toLocaleString('default', { month: 'long' });
+    const year = date.getFullYear().toString().slice(-2);
+    return `${month} ${year}'`;
+  };
 
   return (
     <PageTransition>
       {/* Timeline */}
       <section className="max-w-7xl mx-auto px-8 py-8 relative">
         <div className="flex flex-col gap-24 relative">
-          {experiences.map((exp, i) => (
+          {experienceList.map((exp, i) => (
             <div key={exp.id} className={`flex flex-col ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-12 group`}>
               {/* Circle */}
               <div className="relative shrink-0">
@@ -49,13 +50,13 @@ export default function Experience() {
                 className="flex-grow p-4 md:p-8 bg-[var(--color-brand-surface-2)] border-[3px] border-white transition-all"
                 style={{ boxShadow: `6px 6px 0px 0px ${SHADOW_COLORS[i % SHADOW_COLORS.length]}` }}
               >
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-                  <div>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-8 mb-6">
+                  <div className="flex-1">
                     <span className="font-sans text-xs uppercase mb-2 block" style={{ color: SHADOW_COLORS[i % SHADOW_COLORS.length] }}>{exp.company}</span>
                     <h2 className="font-pixel text-xl md:text-2xl text-white">{exp.role}</h2>
                   </div>
                   <div className={`mt-4 md:mt-0 px-4 py-2 ${BADGE_STYLES[i % BADGE_STYLES.length].bg} ${BADGE_STYLES[i % BADGE_STYLES.length].text} font-bold font-sans text-sm`}>
-                    {exp.start_date} - {exp.end_date}
+                    {formatDate(exp.start_date)} - {exp.end_date ? formatDate(exp.end_date) : 'Present'}
                   </div>
                 </div>
                 <p className="font-sans text-sm text-[var(--color-brand-text)] opacity-70 mb-6 border-l-4 pl-4" style={{ borderColor: SHADOW_COLORS[i % SHADOW_COLORS.length] }}>
@@ -72,7 +73,7 @@ export default function Experience() {
         <div className="border-[3px] border-white bg-[var(--color-brand-bg)] p-8 neobrutal-shadow-secondary text-center">
           <h3 className="font-pixel text-2xl text-white mb-6">ESTABLISH COMMS?</h3>
           <p className="font-sans text-lg text-[var(--color-brand-text)] opacity-70 mb-8">Interested in collaborating on the next frontier? Signal me through the subspace link.</p>
-          <button className="neobrutal-btn-primary" onClick={() => window.location.href = '/contact'}>TRANSMIT</button>
+          <button className="neobrutal-btn-primary" onClick={() => navigate('/contact')}>TRANSMIT</button>
         </div>
       </section>
     </PageTransition>
