@@ -25,24 +25,13 @@ export default function Projects() {
                 key={project.id}
                 className={`flex flex-col w-full relative overflow-hidden bg-[var(--color-brand-surface-2)] transition-transform hover:-translate-y-2 ${project.featured ? 'neobrutal-card shadow-[0_0_20px_rgba(255,171,243,0.6)] border-[#ffabf3]' : 'border-[3px] border-[var(--color-brand-border)]'}`}
               >
-                {/* Gradient Top Strip */}
-                <div className="h-3 w-full flex">
-                  <div className="flex-1 bg-[var(--color-brand-primary)]"></div>
-                  <div className="flex-1 bg-[var(--color-brand-secondary)]"></div>
-                  <div className="flex-1 bg-[#00dddd]"></div>
-                  <div className="flex-1 bg-[#ffabf3]"></div>
-                </div>
-
-                {/* Browser Window mockup for image */}
-                <div className="border-b-[3px] border-white flex flex-col bg-[var(--color-brand-surface-1)]">
-                  {/* Thumbnail Image */}
-                  <div className="w-full aspect-video relative bg-black flex items-center justify-center overflow-hidden">
-                    {project.thumbnail ? (
-                      <img src={project.thumbnail} alt={project.title} className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
-                    ) : (
-                      <span className="font-pixel text-6xl text-[var(--color-brand-primary)] opacity-30">{(project.title || '?').charAt(0)}</span>
-                    )}
-                  </div>
+                {/* Thumbnail Image */}
+                <div className="w-full aspect-video relative bg-black flex items-center justify-center overflow-hidden border-b-[3px] border-white">
+                  {project.thumbnail ? (
+                    <img src={project.thumbnail} alt={project.title} className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
+                  ) : (
+                    <span className="font-pixel text-6xl text-[var(--color-brand-primary)] opacity-30">{(project.title || '?').charAt(0)}</span>
+                  )}
                 </div>
 
                 {/* Body */}

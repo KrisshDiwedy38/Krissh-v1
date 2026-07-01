@@ -101,7 +101,6 @@ export default function Contact() {
         setStatus('TRANSMISSION COMPLETE');
         setFormData({ name: '', email: '', message: '' });
       } else {
-        const errorData = await res.json();
         // error silenced
         setStatus('SIGNAL LOST — TRY AGAIN');
       }
@@ -114,12 +113,6 @@ export default function Contact() {
   return (
     <PageTransition>
       <main className="min-h-screen pt-8 pb-8 px-8 flex flex-col items-center justify-center relative overflow-hidden">
-
-        {/* Title */}
-        <div className="text-center mb-4 z-10 flex flex-col items-center">
-          <h1 className="font-pixel text-3xl md:text-4xl text-[var(--color-brand-primary)] mb-4 w-full">ESTABLISH CONTACT</h1>
-          <p className="font-sans text-lg text-[var(--color-brand-text)] opacity-70 max-w-2xl mx-auto">Transmitting through the celestial void. Select a frequency to connect with the mothership.</p>
-        </div>
 
         {/* --- DESKTOP ORBITAL VIEW --- */}
         <div
@@ -287,7 +280,7 @@ export default function Contact() {
             </form>
           </div>
         </section>
-        
+
         {/* Toast Notification */}
         {toastVisible && (
           <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-[var(--color-brand-primary)] text-black px-6 py-3 border-[3px] border-black shadow-[6px_6px_0px_0px_var(--color-brand-secondary)] font-pixel text-xs animate-float">

@@ -127,18 +127,18 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center md:items-start gap-12">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-start gap-10 md:gap-12">
         
         {/* Left Side: Logo */}
-        <div className="flex flex-col items-center md:items-start gap-4">
+        <div className="flex flex-col items-start gap-4 w-full md:w-auto">
           <h2 className="font-pixel text-2xl md:text-3xl text-[var(--color-brand-text)] m-0 tracking-tight">K.DIWEDY</h2>
-          <p className="opacity-60 text-sm max-w-xs text-center md:text-left" style={{ fontFamily: 'var(--font-pixel-body)' }}>
+          <p className="opacity-60 text-sm max-w-xs text-left" style={{ fontFamily: 'var(--font-pixel-body)' }}>
             Building retro-futuristic digital experiences across the solar system.
           </p>
         </div>
 
         {/* Center: Nav Links */}
-        <div className="flex flex-wrap justify-center gap-6 md:gap-8" style={{ fontFamily: 'var(--font-pixel-body)', fontSize: '1.2rem' }}>
+        <div className="grid grid-cols-2 gap-y-4 gap-x-12 md:flex md:flex-wrap md:justify-center md:gap-8 w-full md:w-auto" style={{ fontFamily: 'var(--font-pixel-body)', fontSize: '1.2rem' }}>
           <Link to="/" className="text-[var(--color-brand-primary)] glitch-hover uppercase">Home</Link>
           <Link to="/about" className="text-[var(--color-brand-secondary)] glitch-hover uppercase">About</Link>
           <Link to="/projects" className="text-[var(--color-brand-primary)] glitch-hover uppercase">Projects</Link>
@@ -146,7 +146,7 @@ export default function Footer() {
         </div>
 
         {/* Right Side: Social Icons */}
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-6 items-center w-full md:w-auto justify-start">
           <a href="https://github.com/KrisshDiwedy38" target="_blank" rel="noreferrer" className="w-8 h-8 opacity-60 hover:opacity-100 hover:scale-110 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)]">
             <img src="/Github_Logo.png" alt="GitHub" className="w-full h-full object-contain filter drop-shadow-[0_0_4px_#fff]" />
           </a>
